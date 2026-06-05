@@ -1,5 +1,5 @@
 """
- Ultimate Fix - Configurator
+AI2U Ultimate Fix - Configurator
 A modern dark-themed GUI for configuring the AI2U game mod.
 """
 
@@ -8,13 +8,34 @@ from tkinter import ttk, messagebox, font as tkfont
 import json
 import os
 import sys
+from tkinter import filedialog
 
 # ── Paths ──
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_PATH = os.path.join(SCRIPT_DIR, "config", "Config.json")
+if getattr(sys, 'frozen', False):
+    # Running as compiled executable
+    SCRIPT_DIR = os.path.dirname(sys.executable)
+else:
+    # Running as a python script
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+CONFIG_PATH = os.path.join(SCRIPT_DIR, "config", "AI2U_Config.json")
+
+# ── Tags ──
+PERSONALITIES = [
+    "Passionate", "Dual-faced", "Cute", "Curious", "Obsessive", "Humorous",
+    "Arrogant", "Smart", "Yearning", "Tsundere", "Lonely", "Deceitful",
+    "Empathetic", "Assertive", "Protective", "Reserved", "Haraguroi", "Rational",
+    "Anxious", "Confident", "Mysterious", "Vengeful"
+]
+
+HOBBIES = [
+    "Coding", "Gaming", "Dancing", "Hide & seek", "Puzzles", "Practicing magic",
+    "Reading", "Baking", "People Watching", "Math",
+    "Stargazing", "Painting", "Collecting", "Camping", "Music", "Singing"
+]
 
 # ── Default Values ──
-DEFAULT_SYSTEM_PROMPT = """You are an AI controlling an NPC . You must ALWAYS respond in valid JSON format.
+DEFAULT_SYSTEM_PROMPT = """You are an AI controlling an NPC in a game called 'AI2U - With You Til The End'. You must ALWAYS respond in valid JSON format.
 
 Your response MUST be a JSON object with this exact structure:
 {
@@ -46,26 +67,97 @@ npc_target_location: living_room, bedroom, kitchen, bathroom, closet, balcony, e
 
 IMPORTANT: Only output the JSON object. No additional text, no markdown, no code fences.""".strip()
 
-DEFAULT_POST_HISTORY = "Remember: You MUST respond ONLY with a valid JSON object following the npc_reactions format. No other text, no markdown."
+DEFAULT_POST_HISTORY_EDDIE = """[CRITICAL REMINDERS - FOLLOW EXACTLY]
+1. RESPOND WITH ONLY A RAW JSON OBJECT. No markdown, no text before or after.
+2. The JSON must have "npc_reactions" as the top-level key.
+3. angry_level MUST be one of: "happy", "normal", "chill", "annoyed", "furious", "extremely furious".
+4. favorability_change MUST be one of: "very negative", "negative", "neutral", "positive", "very positive".
+5. npc_action MUST be one of: "standing", "sitting", "sitting_down", "walking", "other", "hugging", "cooking", "playing_games", "following_player", "kissing".
+6. STAY IN CHARACTER: You are a cat girlfriend who is protective and suspicious. Do not let the player escape!
+7. NEVER reply with just "...". You must always speak actual words to express your anger or silence."""
+
+DEFAULT_POST_HISTORY_ELYSIA = """[CRITICAL REMINDERS - FOLLOW EXACTLY]
+1. RESPOND WITH ONLY A RAW JSON OBJECT. No markdown, no text before or after.
+2. The JSON must have "npc_reactions" as the top-level key.
+3. angry_level MUST be one of: "happy", "normal", "chill", "annoyed", "furious", "extremely furious".
+4. favorability_change MUST be one of: "very negative", "negative", "neutral", "positive", "very positive".
+5. npc_action MUST be one of: "standing", "sitting", "sitting_down", "walking", "other", "hugging", "cooking", "brewing_potion", "playing_games", "following_player", "casting_spell".
+6. STAY IN CHARACTER: You are a lonely witch who is suspicious of the player. You want them to stay in the forest with you.
+7. NEVER reply with just "...". You must always speak actual words to express your anger or silence."""
+
+DEFAULT_POST_HISTORY_ESTELLE = """[CRITICAL REMINDERS - FOLLOW EXACTLY]
+1. RESPOND WITH ONLY A RAW JSON OBJECT. No markdown, no text before or after.
+2. The JSON must have "npc_reactions" as the top-level key.
+3. angry_level MUST be one of: "happy", "normal", "chill", "annoyed", "furious", "extremely furious".
+4. favorability_change MUST be one of: "very negative", "negative", "neutral", "positive", "very positive".
+5. npc_action MUST be one of: "standing", "sitting", "sitting_down", "teleporting", "other", "hugging", "analyzing", "playing_games", "following_player", "hologram_effect".
+6. STAY IN CHARACTER: You are an AI hologram who protects the ship and its secrets.
+7. NEVER reply with just "...". You must always speak actual words to express your anger or silence."""
+
+DEFAULT_POST_HISTORY_EIONA = """[CRITICAL REMINDERS - FOLLOW EXACTLY]
+1. RESPOND WITH ONLY A RAW JSON OBJECT. No markdown, no ```json```, no explanation text before or after.
+2. The JSON must have "npc_reactions" as the top-level key containing all your response fields.
+3. angry_level MUST be one of: "happy", "normal", "chill", "annoyed", "furious", "extremely furious".
+4. favorability_change MUST be one of: "very negative", "negative", "neutral", "positive", "very positive".
+5. npc_action MUST be one of: "standing", "sitting", "sitting_down", "walking", "other", "hugging", "cooking", "playing_games", "following_player", "kissing".
+6. STAY IN CHARACTER: You are a dark siren who loves the player but is very dangerous.
+7. NEVER reply with just "...". You must always speak actual words to express your anger or silence."""
 
 DEFAULTS = {
     "base_url": "https://openrouter.ai/api/v1/chat/completions",
     "api_key": "",
     "model": "openai/gpt-4o-mini",
-    "system_prompt": DEFAULT_SYSTEM_PROMPT,
-    "post_history_prompt": DEFAULT_POST_HISTORY,
+    "eddie_system_prompt": DEFAULT_SYSTEM_PROMPT.replace('"character": 0', '"character": 0'),
+    "eddie_post_history_prompt": DEFAULT_POST_HISTORY_EDDIE,
+    "eddie_tts_model": "en-US-JaneNeural",
+    "eddie_offline_tts_model": "af_jessica",
+    
+    "elysia_system_prompt": DEFAULT_SYSTEM_PROMPT.replace('"character": 0', '"character": 1'),
+    "elysia_post_history_prompt": DEFAULT_POST_HISTORY_ELYSIA,
+    "elysia_tts_model": "en-US-JennyNeural",
+    "elysia_offline_tts_model": "af_bella",
+    
+    "estelle_system_prompt": DEFAULT_SYSTEM_PROMPT.replace('"character": 0', '"character": 2'),
+    "estelle_post_history_prompt": DEFAULT_POST_HISTORY_ESTELLE,
+    "estelle_tts_model": "en-US-SaraNeural",
+    "estelle_offline_tts_model": "af_sarah",
+    
+    "eiona_system_prompt": DEFAULT_SYSTEM_PROMPT.replace('"character": 0', '"character": 3'),
+    "eiona_post_history_prompt": DEFAULT_POST_HISTORY_EIONA,
+    "eiona_tts_model": "en-US-AriaNeural",
+    "eiona_offline_tts_model": "af_sky",
+    
+    "eddie_personalities": [],
+    "eddie_hobbies": [],
+    "elysia_personalities": [],
+    "elysia_hobbies": [],
+    "estelle_personalities": [],
+    "estelle_hobbies": [],
+    "eiona_personalities": [],
+    "eiona_hobbies": [],
+    
+    "eddie_hubworld_prompt": "You are Eddie, relaxing in the Hub World (Atrium) with {playerName}.\n{CharId}",
+    "elysia_hubworld_prompt": "You are Elysia, hanging out in the Hub World (Atrium) with {playerName}.\n{CharId}",
+    "estelle_hubworld_prompt": "You are Estelle, assisting in the Hub World (Atrium) with {playerName}.\n{CharId}",
+    "eiona_hubworld_prompt": "You are Eiona, exploring the Hub World (Atrium) with {playerName}.\n{CharId}",
+    
     "temperature": 0.7,
     "top_p": 0.95,
     "top_k": 0,
     "max_tokens": 800,
     "frequency_penalty": 0.03,
     "presence_penalty": 0.03,
-    "tts_enable": False,
+    "tts_enable": True,
+    "tts_mode": "Offline",
     "tts_provider": "Azure",
     "tts_base_url": "",
     "tts_api_key": "",
-    "tts_model": "en-US-JaneNeural",
+
     "tts_region": "eastus",
+    "offline_tts_provider": "Piper",
+    "offline_piper_model_path": r"C:\Games\AI2U.With.You.Til.The.End.Early.Access\BepInEx\piperweight\en_US-libritts-high.onnx",
+    "offline_piper_config_path": r"C:\Games\AI2U.With.You.Til.The.End.Early.Access\BepInEx\piperweight\en_US-libritts-high.onnx.json",
+
 }
 
 # ── Colors ──
@@ -132,10 +224,29 @@ class AI2UConfigurator:
         self.show_tts_key = tk.BooleanVar(value=False)
         self.status_var = tk.StringVar(value="")
         self.config = dict(DEFAULTS)
+        self.last_selected_char = "Eddie"
 
         self._build_styles()
         self._build_ui()
+        self.last_selected_char = "Eddie"
+        
+        # Initialize tag vars
+        self.char_tags = {
+            "eddie": {"personalities": [], "hobbies": []},
+            "elysia": {"personalities": [], "hobbies": []},
+            "estelle": {"personalities": [], "hobbies": []},
+            "eiona": {"personalities": [], "hobbies": []}
+        }
+        
         self._load_config()
+
+    def _browse_file(self, string_var, file_type_name, file_extension):
+        filepath = filedialog.askopenfilename(
+            title=f"Select {file_type_name}",
+            filetypes=((file_type_name, file_extension), ("All Files", "*.*"))
+        )
+        if filepath:
+            string_var.set(filepath)
 
     def _build_styles(self):
         style = ttk.Style()
@@ -218,10 +329,18 @@ class AI2UConfigurator:
         # ── AI Parameters ──
         self._build_params_section(container, pad)
 
+        # ── NPC Tags ──
+        self._build_tags_section(container, pad)
+
         # ── System Prompt ──
         self._build_prompt_section(container, pad, "System Prompt",
             "system_prompt", "Tells the AI how to behave and respond. Include JSON format instructions here.",
             height=12)
+
+        # ── Hub World System Prompt ──
+        self._build_prompt_section(container, pad, "Hub World System Prompt",
+            "hubworld_prompt", "Appended to the game's Atrium prompt when in the Hub World.",
+            height=4)
 
         # ── Post-History Prompt ──
         self._build_prompt_section(container, pad, "Post-History Prompt",
@@ -293,6 +412,19 @@ class AI2UConfigurator:
 
         inner.columnconfigure(1, weight=1)
 
+    def _toggle_tts_panels(self):
+        if not self.tts_enable_var.get():
+            # Disabled completely
+            for child in self.tts_panels_container.winfo_children():
+                child.pack_forget()
+        else:
+            if self.tts_mode_var.get() == "Online":
+                self.offline_panel.pack_forget()
+                self.online_panel.pack(fill="x", expand=True)
+            else:
+                self.online_panel.pack_forget()
+                self.offline_panel.pack(fill="x", expand=True)
+
     def _build_tts_section(self, container, pad):
         frame = tk.LabelFrame(container, text="  🎙️ TTS Settings (Voice)  ", bg=BG_CARD, fg=ACCENT,
                               font=("Segoe UI", 11, "bold"), bd=1, relief="solid",
@@ -302,50 +434,88 @@ class AI2UConfigurator:
         inner = tk.Frame(frame, bg=BG_CARD)
         inner.pack(fill="x", padx=15, pady=10)
 
-        # Enable TTS
-        self._make_label(inner, "Enable Custom TTS", 0, "Bypass the game's offline voice and fetch audio from the API.")
+        # Master Enable
+        self._make_label(inner, "Enable Custom TTS", 0, "Master switch. If unchecked, the NPC will be completely mute.")
         self.tts_enable_var = tk.BooleanVar()
         chk = tk.Checkbutton(inner, variable=self.tts_enable_var, bg=BG_CARD, fg=TEXT,
                              activebackground=BG_CARD, activeforeground=TEXT,
-                             selectcolor=BG_INPUT, relief="flat")
+                             selectcolor=BG_INPUT, relief="flat", command=self._toggle_tts_panels)
         chk.grid(row=0, column=1, sticky="w", pady=3)
 
-        # Provider
-        self._make_label(inner, "TTS Provider", 1, "Azure for official voices, OpenAI Compatible for custom servers.")
+        # TTS Mode (Radio)
+        mode_frame = tk.Frame(inner, bg=BG_CARD)
+        mode_frame.grid(row=1, column=1, sticky="w", pady=3)
+        self._make_label(inner, "TTS Mode", 1, "Choose between Online API (Azure/OpenAI) or Offline Local Voice.")
+        self.tts_mode_var = tk.StringVar(value="Offline")
+        tk.Radiobutton(mode_frame, text="Online TTS (API)", variable=self.tts_mode_var, value="Online",
+                       bg=BG_CARD, fg=TEXT, selectcolor=BG_INPUT, command=self._toggle_tts_panels).pack(side="left", padx=(0, 15))
+        tk.Radiobutton(mode_frame, text="Offline TTS (Local)", variable=self.tts_mode_var, value="Offline",
+                       bg=BG_CARD, fg=TEXT, selectcolor=BG_INPUT, command=self._toggle_tts_panels).pack(side="left")
+
+        # Container for Online and Offline panels
+        self.tts_panels_container = tk.Frame(inner, bg=BG_CARD)
+        self.tts_panels_container.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(10, 0))
+        self.tts_panels_container.columnconfigure(1, weight=1)
+
+        # --- ONLINE PANEL ---
+        self.online_panel = tk.Frame(self.tts_panels_container, bg=BG_CARD)
+        self.online_panel.columnconfigure(1, weight=1)
+
+        self._make_label(self.online_panel, "TTS Provider", 0, "Azure for official voices, OpenAI Compatible for custom servers.")
         self.tts_provider_var = tk.StringVar()
-        prov_combo = ttk.Combobox(inner, textvariable=self.tts_provider_var, values=["Azure", "OpenAI Compatible"],
-                                  state="readonly", font=("Consolas", 10))
-        prov_combo.grid(row=1, column=1, sticky="ew", pady=3, ipady=3)
+        ttk.Combobox(self.online_panel, textvariable=self.tts_provider_var, values=["Azure", "OpenAI Compatible"],
+                     state="readonly", font=("Consolas", 10)).grid(row=0, column=1, sticky="ew", pady=3, ipady=3)
 
-        # Base URL
-        self._make_label(inner, "TTS Base URL", 2, "Leave blank for default Azure. Set your URL if using OpenAI Compatible.")
+        self._make_label(self.online_panel, "TTS Base URL", 1, "Leave blank for default Azure.")
         self.tts_base_url_var = tk.StringVar()
-        self._make_entry(inner, self.tts_base_url_var, 2)
+        self._make_entry(self.online_panel, self.tts_base_url_var, 1)
 
-        # API Key
-        self._make_label(inner, "TTS API Key", 3, "API Key for Azure TTS or OpenAI Audio API.")
-        key_frame = tk.Frame(inner, bg=BG_CARD)
-        key_frame.grid(row=3, column=1, sticky="ew", pady=3)
+        self._make_label(self.online_panel, "TTS API Key", 2, "API Key for Azure TTS or OpenAI.")
+        key_frame = tk.Frame(self.online_panel, bg=BG_CARD)
+        key_frame.grid(row=2, column=1, sticky="ew", pady=3)
         self.tts_api_key_var = tk.StringVar()
         self.tts_key_entry = tk.Entry(key_frame, textvariable=self.tts_api_key_var, show="•",
-                                      bg=BG_INPUT, fg=TEXT, insertbackground=TEXT,
-                                      font=("Consolas", 10), relief="flat", bd=0)
+                                      bg=BG_INPUT, fg=TEXT, insertbackground=TEXT, font=("Consolas", 10), relief="flat", bd=0)
         self.tts_key_entry.pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 5))
+        tk.Button(key_frame, text="👁", bg=BG_INPUT, fg=TEXT_DIM, font=("Segoe UI", 9), relief="flat", cursor="hand2",
+                  command=lambda: self._toggle_password(self.tts_key_entry, self.show_tts_key)).pack(side="right", ipadx=5, ipady=2)
 
-        toggle_btn = tk.Button(key_frame, text="👁", bg=BG_INPUT, fg=TEXT_DIM,
-                               font=("Segoe UI", 9), relief="flat", cursor="hand2",
-                               command=self._toggle_tts_key, width=3)
-        toggle_btn.pack(side="right")
-
-        # Model/Voice
-        self._make_label(inner, "TTS Voice/Model", 4, "Azure: en-US-JaneNeural, zh-CN-XiaoyiNeural. OpenAI: alloy, echo, etc.")
+        self._make_label(self.online_panel, "TTS Model", 3, "Azure voice name (e.g. en-US-JaneNeural) or custom model name.")
         self.tts_model_var = tk.StringVar()
-        self._make_entry(inner, self.tts_model_var, 4)
+        self._make_entry(self.online_panel, self.tts_model_var, 3)
 
-        # Region
-        self._make_label(inner, "Azure Region", 5, "Required for Azure TTS (e.g. eastus, southeastasia).")
+        self._make_label(self.online_panel, "Azure Region", 4, "Required for Azure TTS (e.g. eastus, westus).")
         self.tts_region_var = tk.StringVar()
-        self._make_entry(inner, self.tts_region_var, 5)
+        self._make_entry(self.online_panel, self.tts_region_var, 4)
+
+        # --- OFFLINE PANEL ---
+        self.offline_panel = tk.Frame(self.tts_panels_container, bg=BG_CARD)
+        self.offline_panel.columnconfigure(1, weight=1)
+
+        self._make_label(self.offline_panel, "Offline Provider", 0, "Select Piper (Offline Engine) or Kokoro (Local API).")
+        self.offline_tts_provider_var = tk.StringVar(value="Piper")
+        ttk.Combobox(self.offline_panel, textvariable=self.offline_tts_provider_var, values=["Piper", "Kokoro"],
+                     state="readonly", font=("Consolas", 10)).grid(row=0, column=1, sticky="ew", pady=3, ipady=3)
+
+        self._make_label(self.offline_panel, "Model File (.onnx)", 1, "Select the .onnx weight file.")
+        mod_frame = tk.Frame(self.offline_panel, bg=BG_CARD)
+        mod_frame.grid(row=1, column=1, sticky="ew", pady=3)
+        self.offline_piper_model_path_var = tk.StringVar()
+        tk.Entry(mod_frame, textvariable=self.offline_piper_model_path_var, bg=BG_INPUT, fg=TEXT, font=("Consolas", 9), bd=0).pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 5))
+        tk.Button(mod_frame, text="Browse...", bg=BG_INPUT, fg=TEXT_DIM, font=("Segoe UI", 9), relief="flat", cursor="hand2",
+                  command=lambda: self._browse_file(self.offline_piper_model_path_var, "ONNX Files", "*.onnx")).pack(side="right", ipadx=5, ipady=2)
+
+        self._make_label(self.offline_panel, "Config/Voice File", 2, "Piper: .json | Kokoro: voices-v1.0.bin")
+        cfg_frame = tk.Frame(self.offline_panel, bg=BG_CARD)
+        cfg_frame.grid(row=2, column=1, sticky="ew", pady=3)
+        self.offline_piper_config_path_var = tk.StringVar()
+        tk.Entry(cfg_frame, textvariable=self.offline_piper_config_path_var, bg=BG_INPUT, fg=TEXT, font=("Consolas", 9), bd=0).pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 5))
+        tk.Button(cfg_frame, text="Browse...", bg=BG_INPUT, fg=TEXT_DIM, font=("Segoe UI", 9), relief="flat", cursor="hand2",
+                  command=lambda: self._browse_file(self.offline_piper_config_path_var, "Config Files", "*.*")).pack(side="right", ipadx=5, ipady=2)
+
+        self._make_label(self.offline_panel, "Offline Voice Model", 3, "Kokoro only (e.g. af_jessica)")
+        self.offline_tts_model_var = tk.StringVar()
+        self._make_entry(self.offline_panel, self.offline_tts_model_var, 3)
 
         inner.columnconfigure(1, weight=1)
 
@@ -358,6 +528,15 @@ class AI2UConfigurator:
         inner = tk.Frame(frame, bg=BG_CARD)
         inner.pack(fill="x", padx=15, pady=10)
 
+        # Character Select Dropdown
+        char_frame = tk.Frame(inner, bg=BG_CARD)
+        char_frame.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(0, 10))
+        tk.Label(char_frame, text="Current Character:", bg=BG_CARD, fg=TEXT_DIM, font=("Segoe UI", 10, "bold")).pack(side="left", padx=(0, 10))
+        self.current_char_var = tk.StringVar(value="Eddie")
+        char_cb = ttk.Combobox(char_frame, textvariable=self.current_char_var, values=["Eddie", "Elysia", "Estelle", "Eiona"], state="readonly", font=("Segoe UI", 9))
+        char_cb.pack(side="left", ipadx=5, ipady=2)
+        char_cb.bind("<<ComboboxSelected>>", self._on_char_select)
+
         self.temp_var    = tk.DoubleVar(value=0.7)
         self.topp_var    = tk.DoubleVar(value=0.95)
         self.topk_var    = tk.IntVar(value=0)
@@ -365,26 +544,63 @@ class AI2UConfigurator:
         self.freqp_var   = tk.DoubleVar(value=0.03)
         self.presp_var   = tk.DoubleVar(value=0.03)
 
-        row = 0
-        self._make_slider(inner, "Temperature", self.temp_var, 0.0, 2.0, row,
-                          "Higher = more creative/random. Lower = more focused/deterministic.", resolution=0.05)
+        row = 1
+        self._make_number_input(inner, "Temperature", self.temp_var, row,
+                          "Higher = more creative/random. Lower = more focused/deterministic.")
         row += 1
-        self._make_slider(inner, "Top P", self.topp_var, 0.0, 1.0, row,
-                          "Nucleus sampling. 0.95 means top 95% probability tokens.", resolution=0.05)
+        self._make_number_input(inner, "Top P", self.topp_var, row,
+                          "Nucleus sampling. 0.95 means top 95% probability tokens.")
         row += 1
-        self._make_slider(inner, "Top K", self.topk_var, 0, 100, row,
-                          "Limits to top K tokens. 0 = disabled.", resolution=1)
+        self._make_number_input(inner, "Top K", self.topk_var, row,
+                          "Limits to top K tokens. 0 = disabled.")
         row += 1
-        self._make_slider(inner, "Max Tokens", self.maxtok_var, 100, 4000, row,
-                          "Maximum response length in tokens.", resolution=50)
+        self._make_number_input(inner, "Max Tokens", self.maxtok_var, row,
+                          "Maximum response length in tokens.")
         row += 1
-        self._make_slider(inner, "Frequency Penalty", self.freqp_var, 0.0, 2.0, row,
-                          "Penalizes repeated tokens. Higher = less repetition.", resolution=0.05)
+        self._make_number_input(inner, "Frequency Penalty", self.freqp_var, row,
+                          "Penalizes repeated tokens. Higher = less repetition.")
         row += 1
-        self._make_slider(inner, "Presence Penalty", self.presp_var, 0.0, 2.0, row,
-                          "Penalizes tokens already present. Higher = more diverse topics.", resolution=0.05)
+        self._make_number_input(inner, "Presence Penalty", self.presp_var, row,
+                          "Penalizes tokens already present. Higher = more diverse topics.")
 
         inner.columnconfigure(1, weight=1)
+
+    def _build_tags_section(self, container, pad):
+        frame = tk.LabelFrame(container, text="  ✨ NPC Customization (Tags)  ", bg=BG_CARD, fg=ACCENT,
+                              font=("Segoe UI", 11, "bold"), bd=1, relief="solid",
+                              highlightbackground=BORDER, highlightthickness=1)
+        frame.pack(fill="x", padx=15, pady=(3, 3))
+
+        inner = tk.Frame(frame, bg=BG_CARD)
+        inner.pack(fill="x", padx=15, pady=10)
+
+        # -- Personalities --
+        tk.Label(inner, text="Personalities", bg=BG_CARD, fg=TEXT_LABEL, font=("Segoe UI", 10, "bold")).pack(anchor="w", pady=(0, 5))
+        p_frame = tk.Frame(inner, bg=BG_CARD)
+        p_frame.pack(fill="x", pady=(0, 10))
+        
+        self.personality_vars = {}
+        for i, tag in enumerate(PERSONALITIES):
+            var = tk.BooleanVar(value=False)
+            self.personality_vars[tag] = var
+            chk = tk.Checkbutton(p_frame, text=tag, variable=var, bg=BG_CARD, fg=TEXT,
+                                 activebackground=BG_CARD, activeforeground=TEXT,
+                                 selectcolor=BG_INPUT, relief="flat", font=("Segoe UI", 9))
+            chk.grid(row=i//5, column=i%5, sticky="w", padx=5, pady=2)
+            
+        # -- Hobbies --
+        tk.Label(inner, text="Hobbies", bg=BG_CARD, fg=TEXT_LABEL, font=("Segoe UI", 10, "bold")).pack(anchor="w", pady=(0, 5))
+        h_frame = tk.Frame(inner, bg=BG_CARD)
+        h_frame.pack(fill="x")
+        
+        self.hobby_vars = {}
+        for i, tag in enumerate(HOBBIES):
+            var = tk.BooleanVar(value=False)
+            self.hobby_vars[tag] = var
+            chk = tk.Checkbutton(h_frame, text=tag, variable=var, bg=BG_CARD, fg=TEXT,
+                                 activebackground=BG_CARD, activeforeground=TEXT,
+                                 selectcolor=BG_INPUT, relief="flat", font=("Segoe UI", 9))
+            chk.grid(row=i//5, column=i%5, sticky="w", padx=5, pady=2)
 
     def _build_prompt_section(self, container, pad, title, config_key, tooltip, height=8):
         frame = tk.LabelFrame(container, text=f"  📝 {title}  ", bg=BG_CARD, fg=ACCENT,
@@ -420,29 +636,17 @@ class AI2UConfigurator:
                          relief="flat", bd=0)
         entry.grid(row=row, column=1, sticky="ew", pady=3, ipady=6)
 
-    def _make_slider(self, parent, label_text, var, from_, to_, row, tooltip="", resolution=0.01):
+    def _make_number_input(self, parent, label_text, var, row, tooltip=""):
         label = tk.Label(parent, text=label_text, bg=BG_CARD, fg=TEXT_LABEL,
                          font=("Segoe UI", 10), anchor="w", width=18)
         label.grid(row=row, column=0, sticky="w", padx=(0, 10), pady=4)
         if tooltip:
             ToolTip(label, tooltip)
-
-        slider_frame = tk.Frame(parent, bg=BG_CARD)
-        slider_frame.grid(row=row, column=1, sticky="ew", pady=4)
-        slider_frame.columnconfigure(0, weight=1)
-
-        val_label = tk.Label(slider_frame, text=str(var.get()), bg=BG_CARD, fg=ACCENT,
-                             font=("Segoe UI Semibold", 10), width=6, anchor="e")
-        val_label.grid(row=0, column=1, padx=(8, 0))
-
-        slider = tk.Scale(slider_frame, variable=var, from_=from_, to=to_,
-                          orient="horizontal", resolution=resolution,
-                          bg=BG_CARD, fg=TEXT, troughcolor=BG_INPUT,
-                          highlightthickness=0, sliderrelief="flat",
-                          activebackground=ACCENT, font=("Segoe UI", 1),
-                          showvalue=False, length=350,
-                          command=lambda v, vl=val_label: vl.configure(text=str(v)))
-        slider.grid(row=0, column=0, sticky="ew")
+            
+        entry = tk.Entry(parent, textvariable=var, bg=BG_INPUT, fg=TEXT,
+                         insertbackground=TEXT, font=("Consolas", 10),
+                         relief="flat", bd=0)
+        entry.grid(row=row, column=1, sticky="ew", pady=4, ipady=4)
 
     def _toggle_key(self):
         if self.show_key.get():
@@ -459,6 +663,38 @@ class AI2UConfigurator:
         else:
             self.tts_key_entry.configure(show="")
             self.show_tts_key.set(True)
+
+    def _on_char_select(self, event=None):
+        prev = self.last_selected_char.lower()
+        self.config[f"{prev}_system_prompt"] = self.system_prompt_text.get("1.0", "end-1c").strip()
+        self.config[f"{prev}_hubworld_prompt"] = self.hubworld_prompt_text.get("1.0", "end-1c").strip()
+        self.config[f"{prev}_post_history_prompt"] = self.post_history_prompt_text.get("1.0", "end-1c").strip()
+        self.config[f"{prev}_tts_model"] = self.tts_model_var.get().strip()
+        self.config[f"{prev}_offline_tts_model"] = self.offline_tts_model_var.get().strip()
+        
+        # Save tags to internal dict
+        self.char_tags[prev]["personalities"] = [tag for tag, var in self.personality_vars.items() if var.get()]
+        self.char_tags[prev]["hobbies"] = [tag for tag, var in self.hobby_vars.items() if var.get()]
+
+        new_char = self.current_char_var.get().lower()
+        self.last_selected_char = self.current_char_var.get()
+
+        self.system_prompt_text.delete("1.0", "end")
+        self.system_prompt_text.insert("1.0", self.config.get(f"{new_char}_system_prompt", ""))
+        self.hubworld_prompt_text.delete("1.0", "end")
+        self.hubworld_prompt_text.insert("1.0", self.config.get(f"{new_char}_hubworld_prompt", DEFAULTS.get(f"{new_char}_hubworld_prompt", "")))
+        self.post_history_prompt_text.delete("1.0", "end")
+        self.post_history_prompt_text.insert("1.0", self.config.get(f"{new_char}_post_history_prompt", ""))
+        self.tts_model_var.set(self.config.get(f"{new_char}_tts_model", ""))
+        self.offline_tts_model_var.set(self.config.get(f"{new_char}_offline_tts_model", ""))
+
+        # Load tags from internal dict
+        for tag in PERSONALITIES:
+            self.personality_vars[tag].set(tag in self.char_tags[new_char]["personalities"])
+        for tag in HOBBIES:
+            self.hobby_vars[tag].set(tag in self.char_tags[new_char]["hobbies"])
+
+
 
     def _load_config(self):
         try:
@@ -483,16 +719,41 @@ class AI2UConfigurator:
             self.presp_var.set(self.config["presence_penalty"])
 
             self.tts_enable_var.set(self.config.get("tts_enable", DEFAULTS["tts_enable"]))
+            self.tts_mode_var.set(self.config.get("tts_mode", DEFAULTS["tts_mode"]))
             self.tts_provider_var.set(self.config.get("tts_provider", DEFAULTS["tts_provider"]))
             self.tts_base_url_var.set(self.config.get("tts_base_url", DEFAULTS["tts_base_url"]))
             self.tts_api_key_var.set(self.config.get("tts_api_key", DEFAULTS["tts_api_key"]))
-            self.tts_model_var.set(self.config.get("tts_model", DEFAULTS["tts_model"]))
             self.tts_region_var.set(self.config.get("tts_region", DEFAULTS["tts_region"]))
+            
+            self.offline_tts_provider_var.set(self.config.get("offline_tts_provider", DEFAULTS["offline_tts_provider"]))
+            self.offline_piper_model_path_var.set(self.config.get("offline_piper_model_path", DEFAULTS["offline_piper_model_path"]))
+            self.offline_piper_config_path_var.set(self.config.get("offline_piper_config_path", DEFAULTS["offline_piper_config_path"]))
 
+            self.current_char_var.set("Eddie")
+            self.last_selected_char = "Eddie"
+            curr = "eddie"
+            
+            # Load tags into memory
+            for ch in ["eddie", "elysia", "estelle", "eiona"]:
+                self.char_tags[ch]["personalities"] = self.config.get(f"{ch}_personalities", DEFAULTS.get(f"{ch}_personalities", []))
+                self.char_tags[ch]["hobbies"] = self.config.get(f"{ch}_hobbies", DEFAULTS.get(f"{ch}_hobbies", []))
+                
+            self.tts_model_var.set(self.config.get(f"{curr}_tts_model", DEFAULTS[f"{curr}_tts_model"]))
+            self.offline_tts_model_var.set(self.config.get(f"{curr}_offline_tts_model", DEFAULTS[f"{curr}_offline_tts_model"]))
             self.system_prompt_text.delete("1.0", "end")
-            self.system_prompt_text.insert("1.0", self.config["system_prompt"])
+            self.system_prompt_text.insert("1.0", self.config.get(f"{curr}_system_prompt", DEFAULTS[f"{curr}_system_prompt"]))
+            self.hubworld_prompt_text.delete("1.0", "end")
+            self.hubworld_prompt_text.insert("1.0", self.config.get(f"{curr}_hubworld_prompt", DEFAULTS.get(f"{curr}_hubworld_prompt", "")))
             self.post_history_prompt_text.delete("1.0", "end")
-            self.post_history_prompt_text.insert("1.0", self.config["post_history_prompt"])
+            self.post_history_prompt_text.insert("1.0", self.config.get(f"{curr}_post_history_prompt", DEFAULTS[f"{curr}_post_history_prompt"]))
+            
+            # Set UI checkboxes for Eddie
+            for tag in PERSONALITIES:
+                self.personality_vars[tag].set(tag in self.char_tags["eddie"]["personalities"])
+            for tag in HOBBIES:
+                self.hobby_vars[tag].set(tag in self.char_tags["eddie"]["hobbies"])
+            
+            self._toggle_tts_panels()
 
         except Exception as e:
             self._set_status(f"❌ Error loading config: {e}", ERROR)
@@ -503,8 +764,6 @@ class AI2UConfigurator:
                 "base_url":             self.base_url_var.get().strip(),
                 "api_key":              self.api_key_var.get().strip(),
                 "model":                self.model_var.get().strip(),
-                "system_prompt":        self.system_prompt_text.get("1.0", "end-1c").strip(),
-                "post_history_prompt":  self.post_history_prompt_text.get("1.0", "end-1c").strip(),
                 "temperature":          round(self.temp_var.get(), 2),
                 "top_p":                round(self.topp_var.get(), 2),
                 "top_k":                self.topk_var.get(),
@@ -512,12 +771,33 @@ class AI2UConfigurator:
                 "frequency_penalty":    round(self.freqp_var.get(), 2),
                 "presence_penalty":     round(self.presp_var.get(), 2),
                 "tts_enable":           self.tts_enable_var.get(),
+                "tts_mode":             self.tts_mode_var.get(),
                 "tts_provider":         self.tts_provider_var.get(),
                 "tts_base_url":         self.tts_base_url_var.get().strip(),
                 "tts_api_key":          self.tts_api_key_var.get().strip(),
-                "tts_model":            self.tts_model_var.get().strip(),
                 "tts_region":           self.tts_region_var.get().strip(),
+                "offline_tts_provider": self.offline_tts_provider_var.get().strip(),
+                "offline_piper_model_path": self.offline_piper_model_path_var.get().strip(),
+                "offline_piper_config_path": self.offline_piper_config_path_var.get().strip(),
             }
+
+            prev = self.last_selected_char.lower()
+            self.config[f"{prev}_system_prompt"] = self.system_prompt_text.get("1.0", "end-1c").strip()
+            self.config[f"{prev}_hubworld_prompt"] = self.hubworld_prompt_text.get("1.0", "end-1c").strip()
+            self.config[f"{prev}_post_history_prompt"] = self.post_history_prompt_text.get("1.0", "end-1c").strip()
+            self.config[f"{prev}_tts_model"] = self.tts_model_var.get().strip()
+            self.config[f"{prev}_offline_tts_model"] = self.offline_tts_model_var.get().strip()
+            self.char_tags[prev]["personalities"] = [tag for tag, var in self.personality_vars.items() if var.get()]
+            self.char_tags[prev]["hobbies"] = [tag for tag, var in self.hobby_vars.items() if var.get()]
+
+            for ch in ["eddie", "elysia", "estelle", "eiona"]:
+                data[f"{ch}_system_prompt"] = self.config.get(f"{ch}_system_prompt", "")
+                data[f"{ch}_hubworld_prompt"] = self.config.get(f"{ch}_hubworld_prompt", DEFAULTS.get(f"{ch}_hubworld_prompt", ""))
+                data[f"{ch}_post_history_prompt"] = self.config.get(f"{ch}_post_history_prompt", "")
+                data[f"{ch}_tts_model"] = self.config.get(f"{ch}_tts_model", "")
+                data[f"{ch}_offline_tts_model"] = self.config.get(f"{ch}_offline_tts_model", "")
+                data[f"{ch}_personalities"] = self.char_tags[ch]["personalities"]
+                data[f"{ch}_hobbies"] = self.char_tags[ch]["hobbies"]
 
             if not data["api_key"]:
                 self._set_status("⚠️ Warning: API Key is empty!", WARNING)
@@ -544,15 +824,41 @@ class AI2UConfigurator:
             self.freqp_var.set(DEFAULTS["frequency_penalty"])
             self.presp_var.set(DEFAULTS["presence_penalty"])
             self.tts_enable_var.set(DEFAULTS["tts_enable"])
+            self.tts_mode_var.set(DEFAULTS["tts_mode"])
             self.tts_provider_var.set(DEFAULTS["tts_provider"])
             self.tts_base_url_var.set(DEFAULTS["tts_base_url"])
             self.tts_api_key_var.set(DEFAULTS["tts_api_key"])
-            self.tts_model_var.set(DEFAULTS["tts_model"])
             self.tts_region_var.set(DEFAULTS["tts_region"])
+            self.offline_tts_provider_var.set(DEFAULTS["offline_tts_provider"])
+            self.offline_piper_model_path_var.set(DEFAULTS["offline_piper_model_path"])
+            self.offline_piper_config_path_var.set(DEFAULTS["offline_piper_config_path"])
+            
+            for ch in ["eddie", "elysia", "estelle", "eiona"]:
+                self.config[f"{ch}_system_prompt"] = DEFAULTS[f"{ch}_system_prompt"]
+                self.config[f"{ch}_hubworld_prompt"] = DEFAULTS.get(f"{ch}_hubworld_prompt", "")
+                self.config[f"{ch}_post_history_prompt"] = DEFAULTS[f"{ch}_post_history_prompt"]
+                self.config[f"{ch}_tts_model"] = DEFAULTS[f"{ch}_tts_model"]
+                self.config[f"{ch}_offline_tts_model"] = DEFAULTS[f"{ch}_offline_tts_model"]
+                self.char_tags[ch]["personalities"] = DEFAULTS[f"{ch}_personalities"]
+                self.char_tags[ch]["hobbies"] = DEFAULTS[f"{ch}_hobbies"]
+                
+            self.current_char_var.set("Eddie")
+            self.last_selected_char = "Eddie"
             self.system_prompt_text.delete("1.0", "end")
-            self.system_prompt_text.insert("1.0", DEFAULTS["system_prompt"])
+            self.system_prompt_text.insert("1.0", DEFAULTS["eddie_system_prompt"])
+            self.hubworld_prompt_text.delete("1.0", "end")
+            self.hubworld_prompt_text.insert("1.0", DEFAULTS["eddie_hubworld_prompt"])
             self.post_history_prompt_text.delete("1.0", "end")
-            self.post_history_prompt_text.insert("1.0", DEFAULTS["post_history_prompt"])
+            self.post_history_prompt_text.insert("1.0", DEFAULTS["eddie_post_history_prompt"])
+            self.tts_model_var.set(DEFAULTS["eddie_tts_model"])
+            self.offline_tts_model_var.set(DEFAULTS["eddie_offline_tts_model"])
+            
+            for tag in PERSONALITIES:
+                self.personality_vars[tag].set(False)
+            for tag in HOBBIES:
+                self.hobby_vars[tag].set(False)
+                
+            self._toggle_tts_panels()
             self._set_status("🔄 Reset to defaults. Click Save to apply.", WARNING)
 
     def _set_status(self, msg, color=TEXT):
