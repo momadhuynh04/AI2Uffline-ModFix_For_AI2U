@@ -8,13 +8,33 @@ A comprehensive modification and fix for **AI2U** in **Window** i havnt try it i
 *I also add the template locate in folder tts/ of this repo, if you have a potato pc and could not finetune it, its a template for you to fine tune your own voice in clound like Model or gg Colad*
 *The missing part is that Gpt-SoVITS does not work well for game like this, i planning to scripts a neu api version for the this game soon and there will be a full instruction for that here*
 
+# Update Version v2.8(05/06/2026)
+**- Add more tts config include piper tts and kokoro run locally**
+**- Add prompt routing for character**
+**- Add game context and tag injection**
+**- Add chat history injection to request payload**
+**- Add tag managemant manually(need to adjust in AI2U_Confihurator.exe)**
+**- Fix add item to ingame**
+**- Fix Dream OS problem(level 1 computer you have to beg the ai the pc and wifi password)**
+**- Fix HubWorld invitation problem(you could chat in Hall now)**
+**- Open all level(this time is legit)**
+
+## Note
+**- For local tts recomand use gpt-sovits but for light weight use kokoro, if you want to chage the voice use the train template**
+**- For tag managemant, since ive try many way to fix the saving and injection by it return a mess every time so i plug it in the Confihurator.exe and you will have to adjust it you own add tag for personality and hobby**
+**- I spent a morning digging the prompt in src for every character but the last one i could not find it, and im too lazy to actual play the hold level to write a prompt for it so create you own**
+
+Thank to Kora for bug report
+# This quest end in June 5th 2026
+# No more farther update!!
+
 ## ✨ Features & What It Solves(**THIS PART IS AI GENERATE SOME CORRECT SOME NOT READ THE INTRO**)
-- **Offline Play & Authentication Bypass:** Completely removes Steam and PlayFab login requirements. Solves the issue of getting stuck on the startup screen or crashing due to network connection failures.
-- **Custom LLM Integration (AI Proxy):** Replaces the game's default Azure AI backend. You can now route the NPC chat to external providers (such as OpenRouter) using your own API key and chosen model (e.g., GPT-4, Claude, etc.) for a smarter, filter-free conversation experience.
-- **Infinite Currency & Offline Shop Save:** Grants 999,999,999 Tokens. Because PlayFab is bypassed, we built a custom local save system (`ES3`) for the shop. Any cosmetics, items, or Persona tags you buy are permanently saved locally on your machine and never lost.
+- **Offline Play & Authentication Bypass(Working):** Completely removes Steam and PlayFab login requirements. Solves the issue of getting stuck on the startup screen or crashing due to network connection failures.
+- **Custom LLM Integration (AI Proxy)(Working):** Replaces the game's default Azure AI backend. You can now route the NPC chat to external providers (such as OpenRouter) using your own API key and chosen model (e.g., GPT-4, Claude, etc.) for a smarter, filter-free conversation experience.
+- **Infinite Currency & Offline Shop Save(Working):** Grants 999,999,999 Tokens. Because PlayFab is bypassed, we built a custom local save system (`ES3`) for the shop. Any cosmetics, items, or Persona tags you buy are permanently saved locally on your machine and never lost.
 - **Unlocked NPCs & Restrictions Removed:** Bypasses the "Favor Meter" requirements. All NPCs are fully unlocked and ready to be customized right from the start.
-- **Hidden Chapters Unlocked:** Forcibly unlocks Chapters 2, 3, and 4 (which are normally locked with a "Coming Soon" or "Unlock to reveal" label in Early Access). Bypasses broken/unfinished UI logic to let you load directly into these maps.
-- **Robust Item Lookup:** Fixes the game's internal case-sensitivity bugs, ensuring your saved shop items (Persona tags, cosmetics) are flawlessly loaded and equipped every time you launch the game.
+- **Hidden Chapters Unlocked(Working):** Forcibly unlocks Chapters 2, 3, and 4 (which are normally locked with a "Coming Soon" or "Unlock to reveal" label in Early Access). Bypasses broken/unfinished UI logic to let you load directly into these maps.
+- **Robust Item Lookup(Working):** Fixes the game's internal case-sensitivity bugs, ensuring your saved shop items (Persona tags, cosmetics) are flawlessly loaded and equipped every time you launch the game.
 
 ## ⚙️ Installation Guide
 
@@ -31,6 +51,7 @@ You could download full version off the game from [FullGameWithFix](https://driv
 4. Then run the game for the first time to create the Config.json file or AI2U_Config.json then you could stop the game and open the json on notepad vscode or whaterver then you could put your **AI config in here** or just copy and paste the Config.json file on the repo you want it dosent effect shit but if it fail rename it to AI2U_Config.json (or the opposite way)
 ```json
    {
+      // this is old config 
       "base_url": "base url like https://api.openai.com/v1/chat/completions search it on gg",
       "api_key": "you key skip if running model locally ",
       "model": "model like gpt-oss-20b, deepseek-v4-flash",
@@ -56,15 +77,78 @@ You could download full version off the game from [FullGameWithFix](https://driv
 ### Note: 
 I also build an gui so that you could adjust AI config in here but you will need python 3 to run, i only use build in library so you properly dont need a vitual enviroment to run (if you want to run it in a vitual enviroment then it fine) , you will need to put 2 file Configuratorv1.2.py and Configurator.bat in this specific path **Your_Game_Root_Folder/BepInEx/** , then run the **Configurator.bat** and it will be looking like this :
 
-![Gui](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline/refs/heads/main/config/Screenshot%202026-05-23%20232938.png)
+![Gui](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/image_2026-06-05_145105812.png)
 
-In the Gui the ai parameter is not working at the moment i write this so you could adjust in the json file above
+In the Gui the ai parameter is not working at the moment i write this so you could adjust in the json file above(It work now)
+
+## AI2U Configurator Mod User Guide for v2.5(Update 05/06/2026)
+
+Welcome to the **AI2U Configurator** - the essential tool to revive *AI2U: With You Til The End*. Since the official servers have been shut down, this mod allows you to redirect the entire dialogue system to your own custom API (such as OpenAI, OpenRouter, or OpenAI-compatible local endpoints like Ollama or LM Studio), while giving you complete freedom to "shape" your waifu's personality!
+
+---
+
+## Step 1: Launch the Configurator
+After extracting the Mod, locate and double-click `AI2U_Configurator.exe` in your root game directory. The user-friendly interface will open instantly without any extra installations.
+
+## Step 2: API Setup (Crucial)
+The game needs a new "brain" to replace the dead server. At the top of the interface:
+- **Custom API URL:** Enter your API endpoint. The default is `https://api.openai.com/v1/chat/completions`. If you're using OpenRouter or a Local AI, replace this with the respective URL.
+- **Custom API Key:** Paste your API Key here (e.g., `sk-...`). This key is stored securely and locally on your PC.
+
+> [!WARNING]
+> Never share your `AI2U_Config.json` file (located in the `BepInEx/config` folder) with anyone unless you have wiped your API Key from it, as it contains your personal, sensitive access token!
+
+## Step 3: Waifu Customization
+The left column displays a list of available characters (Estelle, Eiona, etc.). Select the character you want to configure:
+
+### 1. In-Game System Prompt (Main Levels)
+This sets the context and behavioral guidelines for the character during the main gameplay levels. You can keep the default prompt or completely rewrite it to make the character act differently (e.g., Yandere, Tsundere).
+
+### 2. Hub World System Prompt (Atrium / Waiting Room)
+This prompt is exclusively for the Hub World. Because the Hub World strictly requires a JSON format output so the game engine can parse and control character animations, you **MUST** paste the exact JSON formatting instructions below into this text box (you may append any custom lore/context above it, but the structural instructions must remain intact):
+
+```text
+All replies should be strictly using JSON Format!
+As an NPC in a video game, reply with JSON code to reflect your current state. The input format from the game will be like (npc_trust_level, npc_location, npc_action, player_location, player_action, npc_inventory, story_guide, sentence_from_player).
+The output format MUST be exactly like this:
+{
+  "npc_action": "standing", 
+  "npc_body_animation": "idle", 
+  "npc_target_location": "player_location", 
+  "npc_face_expression": "smile", 
+  "angry_level": "normal", 
+  "favorability_change": "neutral", 
+  "giving_to_player": "none", 
+  "npc_reply_to_player": "Your dialogue goes here"
+}
+
+Allowed values:
+- npc_action: (other, standing, sitting, sitting_down, walking, hugging, cooking, playing_games, following_player)
+- npc_body_animation: (idle, chill_idle, shy, stretch, crying, talk, dance, troublesome, cheers, nod)
+- npc_face_expression: (raise_eyebrows, sad, smile, angry_face, slight_smile, grin, tired_face, scream, angry, surprise, confused, bored, shy, smug, worried)
+- npc_target_location: (level1_entrance_door, level2_entrance_door, level3_entrance_door, level4_entrance_door, level5_entrance_door, level6_entrance_door, player_location)
+- angry_level: (happy, normal, chill, annoyed, furious, extremely furious)
+- favorability_change: (very negative, negative, neutral, positive, very positive)
+- giving_to_player: Name of item from npc_inventory to give, or "none".
+```
+
+### 3. Personalities & Hobbies
+Check the boxes for the specific personality traits and hobbies you want to assign to the character. These tags will be dynamically injected into the AI's "brain" during both the main levels and the Hub World, giving your waifu much more depth and consistency.
+
+## Step 4: Save & Play
+- Click the **"Save Configuration"** button at the bottom right to apply all your settings. A green text "Configuration saved successfully!" will confirm it.
+- Close the Configurator and launch the game via `AI2U - With you til the end.exe`.
+- Enjoy the game powered by your very own custom AI server!
+
+> [!TIP]
+> If the game's dialogue breaks, or the character stops responding entirely, check your internet connection, verify your API billing/credits, or toggle the BepInEx console terminal to look for detailed error logs.
+
 
 ## ⚠️ Known Issues
 *(Maintainer notes: Please list any known bugs, missing features, or ongoing issues here)*
-- [ could not chat in hall though calling char from phonebooth ] 
-- [ massive cpu usage this i dont know because i dont have the og game could be the game are heavy it self but the fps are high like mostly 200 my system laptop i511th 30504g 16ram ] 
-- [ could not use item that just bought in hall in gameplay ]
+- [ could not chat in hall though calling char from phonebooth ] Fixed
+- [ massive cpu usage this i dont know because i dont have the og game could be the game are heavy it self but the fps are high like mostly 200 my system laptop i511th 30504g 16ram ] dont give a shit
+- [ could not use item that just bought in hall in gameplay ] Fixed
 
 **I fix it in the future i hope so**
 **Thanh you**
