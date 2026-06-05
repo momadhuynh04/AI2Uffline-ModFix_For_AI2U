@@ -38,7 +38,7 @@ Thank to Kora for bug report
 
 ## ⚙️ Installation Guide
 
-You could download full version off the game from [FullGameWithFix](https://drive.google.com/drive/folders/1LO2G3EelAPuLpc1N7v6FIj9TRwp6BuW2?usp=sharing) , and make sure that you read the ReadMe.txt
+You could download full version off the game from [FullGameWithFix](https://drive.google.com/drive/folders/1LO2G3EelAPuLpc1N7v6FIj9TRwp6BuW2?usp=sharing) the ***version 2.8***, and make sure that you read the ReadMe.txt
 
 ### Prerequisites
 - **BepInEx (v5.x)** must be installed in your game's root directory. So you in BepIndex (**THIS SHIT IS NEEDED**) for this go to there githud download the zip file x64 i use the version x64 5.4.21.0 and you would want to extract it directly in to the game root folder then you will see a folder name BepInEx and two file **doorstop_config.ini and winhttp.dll**, if missing any do it again  
@@ -78,6 +78,7 @@ You could download full version off the game from [FullGameWithFix](https://driv
 I also build an gui so that you could adjust AI config in here but you will need python 3 to run, i only use build in library so you properly dont need a vitual enviroment to run (if you want to run it in a vitual enviroment then it fine) , you will need to put 2 file Configuratorv1.2.py and Configurator.bat in this specific path **Your_Game_Root_Folder/BepInEx/** , then run the **Configurator.bat** and it will be looking like this :
 
 ![Gui](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/image_2026-06-05_145105812.png)
+![Gui](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/image_2026-06-05_151759788.png)
 
 In the Gui the ai parameter is not working at the moment i write this so you could adjust in the json file above(It work now)
 
