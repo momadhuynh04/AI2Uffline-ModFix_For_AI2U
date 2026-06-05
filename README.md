@@ -10,13 +10,21 @@ A comprehensive modification and fix for **AI2U** in **Window** i havnt try it i
 
 # Update Version v2.8(05/06/2026)
 **- Add more tts config include piper tts and kokoro run locally**
+
 **- Add prompt routing for character**
+
 **- Add game context and tag injection**
+
 **- Add chat history injection to request payload**
+
 **- Add tag managemant manually(need to adjust in AI2U_Confihurator.exe)**
+
 **- Fix add item to ingame**
+
 **- Fix Dream OS problem(level 1 computer you have to beg the ai the pc and wifi password)**
+
 **- Fix HubWorld invitation problem(you could chat in Hall now)**
+
 **- Open all level(this time is legit)**
 
 ## Note
@@ -152,5 +160,7 @@ Check the boxes for the specific personality traits and hobbies you want to assi
 - [ could not use item that just bought in hall in gameplay ] Fixed
 
 **I fix it in the future i hope so**
+
 **Thanh you**
+
 **huynhoang04**
