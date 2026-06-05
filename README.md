@@ -25,8 +25,8 @@ A comprehensive modification and fix for **AI2U** in **Window** i havnt try it i
 **- I spent a morning digging the prompt in src for every character but the last one i could not find it, and im too lazy to actual play the hold level to write a prompt for it so create you own**
 
 Thank to Kora for bug report
-# This quest end in June 5th 2026
-# No more farther update!!
+**This quest end in June 5th 2026**
+**No more farther update!!**
 
 ## ✨ Features & What It Solves(**THIS PART IS AI GENERATE SOME CORRECT SOME NOT READ THE INTRO**)
 - **Offline Play & Authentication Bypass(Working):** Completely removes Steam and PlayFab login requirements. Solves the issue of getting stuck on the startup screen or crashing due to network connection failures.
