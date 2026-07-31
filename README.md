@@ -94,6 +94,7 @@ The game's dialogue system is rerouted to your own custom LLM API instead of the
 ---
 
 ## Installation
+## Please download the game form the link, the bypass login phase some how have troubles to push, that is the must replace file for the game to work 
 
 ### Download
 
