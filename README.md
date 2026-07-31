@@ -12,6 +12,7 @@ If you've already tried adding `steam_api64.dll` and `steam_appid.txt` with no l
 >
 > **If you enjoy the game, please buy it — it's only $15.**
 
+![gameplay](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/image.png)
 ---
 
 ## 📥 Download
