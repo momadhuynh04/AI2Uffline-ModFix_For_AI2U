@@ -2,7 +2,7 @@
 
 ## Overview
 
-A comprehensive modification and fix for **AI2U: With You Til The End** on **Windows** (Linux untested).
+A comprehensive modification and fix for **AI2U: With You Til The End** .
 
 This is **not** a traditional mod — it fixes the crack version of the game (Skidrow v0.7.12.2, latest as of 23/05/2026) that suffers from an **infinite loading screen** or connection errors due to the official servers being blocked.
 
