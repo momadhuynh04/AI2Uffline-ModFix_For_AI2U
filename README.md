@@ -17,7 +17,7 @@ If you've already tried adding `steam_api64.dll` and `steam_appid.txt` with no l
 
 ## 📥 Download
 
-> ### [⬇ Click Here to Download (Google Drive)](https://drive.google.com/drive/folders/1LO2G3EelAPuLpc1N7v6FIj9TRwp6BuW2?usp=sharing)
+> ### go to my github profile, on readme.md access my page there you will have the download link of full game playable
 >
 > Full game + fix v2.8 — content all file to run.
 > please read file `ReadMe.txt` before playing.
@@ -99,7 +99,7 @@ The game's dialogue system is rerouted to your own custom LLM API instead of the
 
 ### Download
 
-Full game with fix v2.8: [Google Drive](https://drive.google.com/drive/folders/1LO2G3EelAPuLpc1N7v6FIj9TRwp6BuW2?usp=sharing)
+Full game with fix v2.8: go to my github profile, on readme.md access my page there you will have the download link of full game playable
 
 **Read the included `ReadMe.txt` before proceeding.**
 
