@@ -3,7 +3,9 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
+using System.Threading;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
@@ -78,12 +80,12 @@ namespace AI2U_UltimateFix
         private static string cfgEionaPostHistoryPrompt = "";
         private static string cfgEionaTTSModel = "en-US-AriaNeural";
         private static string cfgEionaOfflineTTSModel = "af_sky";
-        private static float  cfgTemperature = 0.7f;
-        private static float  cfgTopP        = 0.95f;
+        private static double cfgTemperature = 0.7;
+        private static double cfgTopP        = 0.95;
         private static int    cfgTopK        = 0;
         private static int    cfgMaxTokens   = 800;
-        private static float  cfgFreqPenalty = 0.03f;
-        private static float  cfgPresPenalty = 0.03f;
+        private static double cfgFreqPenalty = 0.03;
+        private static double cfgPresPenalty = 0.03;
 
         public static ConfigEntry<float> ConfigFreqPenalty;
         public static ConfigEntry<float> ConfigPresPenalty;
@@ -99,6 +101,8 @@ namespace AI2U_UltimateFix
         public static string cfgOfflineTTSProvider = "Piper";
         public static string cfgOfflinePiperModelPath = "";
         public static string cfgOfflinePiperConfigPath = "";
+        public static string cfgOfflineKokoroModelPath = "";
+        public static string cfgOfflineKokoroVoicesPath = "";
         
         private static IntPtr cachedVoicePtr = IntPtr.Zero;
         private static string cachedVoiceModelPath = "";
@@ -281,12 +285,12 @@ namespace AI2U_UltimateFix
                         if (ch == "eiona") cfgEionaHobbies = parsedArr;
                     }
                 }
-                if (cfg["temperature"] != null)        cfgTemperature      = cfg["temperature"].AsFloat;
-                if (cfg["top_p"] != null)              cfgTopP             = cfg["top_p"].AsFloat;
+                if (cfg["temperature"] != null)        cfgTemperature      = cfg["temperature"].AsDouble;
+                if (cfg["top_p"] != null)              cfgTopP             = cfg["top_p"].AsDouble;
                 if (cfg["top_k"] != null)              cfgTopK             = cfg["top_k"].AsInt;
                 if (cfg["max_tokens"] != null)         cfgMaxTokens        = cfg["max_tokens"].AsInt;
-                if (cfg["frequency_penalty"] != null)  cfgFreqPenalty      = cfg["frequency_penalty"].AsFloat;
-                if (cfg["presence_penalty"] != null)   cfgPresPenalty      = cfg["presence_penalty"].AsFloat;
+                if (cfg["frequency_penalty"] != null)  cfgFreqPenalty      = cfg["frequency_penalty"].AsDouble;
+                if (cfg["presence_penalty"] != null)   cfgPresPenalty      = cfg["presence_penalty"].AsDouble;
 
                 if (cfg["tts_enable"] != null)         ConfigTTSEnable.Value = cfg["tts_enable"].AsBool;
                 if (cfg["tts_mode"] != null)           ConfigTTSMode.Value = cfg["tts_mode"].Value;
@@ -298,6 +302,8 @@ namespace AI2U_UltimateFix
                 if (cfg["offline_tts_provider"] != null)       cfgOfflineTTSProvider       = cfg["offline_tts_provider"].Value;
                 if (cfg["offline_piper_model_path"] != null)   cfgOfflinePiperModelPath    = cfg["offline_piper_model_path"].Value;
                 if (cfg["offline_piper_config_path"] != null)  cfgOfflinePiperConfigPath   = cfg["offline_piper_config_path"].Value;
+                if (cfg["offline_kokoro_model_path"] != null)  cfgOfflineKokoroModelPath   = cfg["offline_kokoro_model_path"].Value;
+                if (cfg["offline_kokoro_voices_path"] != null) cfgOfflineKokoroVoicesPath  = cfg["offline_kokoro_voices_path"].Value;
 
             LogDebug("Config loaded: URL=" + cfgBaseURL + " Model=" + cfgModel + " Temp=" + cfgTemperature);
             LogDebug("Eddie prompt len=" + cfgEddieSystemPrompt.Length + " Elysia=" + cfgElysiaSystemPrompt.Length + " Estelle=" + cfgEstelleSystemPrompt.Length + " Eiona=" + cfgEionaSystemPrompt.Length);
@@ -325,37 +331,47 @@ namespace AI2U_UltimateFix
     {
         try
         {
-            string pythonPath = "python";
-            string scriptPath = Path.Combine(Directory.GetParent(pluginDir).FullName, "kokoro_server.py");
-            if (File.Exists(scriptPath))
-            {
-                LogDebug(">>> Starting Kokoro Local Server...");
-                System.Diagnostics.ProcessStartInfo start = new System.Diagnostics.ProcessStartInfo();
-                start.FileName = pythonPath;
-                start.Arguments = string.Format("\"{0}\" --model \"{1}\" --voices \"{2}\" --port 8880", scriptPath, cfgOfflinePiperModelPath, cfgOfflinePiperConfigPath);
-                start.UseShellExecute = false;
-                start.CreateNoWindow = true;
-                
-                start.RedirectStandardOutput = true;
-                start.RedirectStandardError = true;
-                
-                kokoroProcess = System.Diagnostics.Process.Start(start);
-                kokoroProcess.BeginOutputReadLine();
-                kokoroProcess.BeginErrorReadLine();
-                
-                kokoroProcess.OutputDataReceived += (sender, e) => {
-                    if (!string.IsNullOrEmpty(e.Data)) LogDebug("[Kokoro] " + e.Data);
-                };
-                kokoroProcess.ErrorDataReceived += (sender, e) => {
-                    if (!string.IsNullOrEmpty(e.Data)) LogDebug("[Kokoro ERR] " + e.Data);
-                };
-                
-                LogDebug(">>> Kokoro Server Started! PID: " + kokoroProcess.Id);
-            }
-            else
-            {
-                LogDebug(">>> Kokoro script not found at " + scriptPath);
-            }
+            string bepinExDir = Directory.GetParent(pluginDir).FullName;
+            string scriptPath = Path.Combine(bepinExDir, "kokoro_server.py");
+
+            string bundledPython = Path.Combine(bepinExDir, "python", "python.exe");
+            bool hasBundledPython = File.Exists(bundledPython);
+            string pythonPath = hasBundledPython ? bundledPython : "python";
+
+            string modelPath  = !string.IsNullOrEmpty(cfgOfflineKokoroModelPath)  ? cfgOfflineKokoroModelPath  : Path.Combine(bepinExDir, "kokoro", "kokoro-v1.0.onnx");
+            string voicesPath = !string.IsNullOrEmpty(cfgOfflineKokoroVoicesPath) ? cfgOfflineKokoroVoicesPath : Path.Combine(bepinExDir, "kokoro", "voices-v1.0.bin");
+
+            if (!File.Exists(scriptPath)) { LogDebug(">>> Kokoro script not found at " + scriptPath); return; }
+            if (!File.Exists(modelPath))  { LogDebug(">>> Kokoro model not found at " + modelPath + " (bundle it in BepInEx/kokoro or set it in the Configurator)."); return; }
+            if (!File.Exists(voicesPath)) { LogDebug(">>> Kokoro voices not found at " + voicesPath); return; }
+
+            LogDebug(hasBundledPython
+                ? ">>> Starting Kokoro Local Server with bundled Python..."
+                : ">>> Bundled Python not found at " + bundledPython + " - falling back to 'python' on PATH.");
+
+            System.Diagnostics.ProcessStartInfo start = new System.Diagnostics.ProcessStartInfo();
+            start.FileName = pythonPath;
+            start.Arguments = string.Format("\"{0}\" --model \"{1}\" --voices \"{2}\" --port 8880", scriptPath, modelPath, voicesPath);
+            start.UseShellExecute = false;
+            start.CreateNoWindow = true;
+            start.WorkingDirectory = bepinExDir;
+
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+
+            kokoroProcess = System.Diagnostics.Process.Start(start);
+
+            kokoroProcess.OutputDataReceived += (sender, e) => {
+                if (!string.IsNullOrEmpty(e.Data)) LogDebug("[Kokoro] " + e.Data);
+            };
+            kokoroProcess.ErrorDataReceived += (sender, e) => {
+                if (!string.IsNullOrEmpty(e.Data)) LogDebug("[Kokoro ERR] " + e.Data);
+            };
+
+            kokoroProcess.BeginOutputReadLine();
+            kokoroProcess.BeginErrorReadLine();
+
+            LogDebug(">>> Kokoro Server Started! PID: " + kokoroProcess.Id);
         }
         catch (Exception ex)
         {
@@ -375,8 +391,11 @@ namespace AI2U_UltimateFix
     }
 
     private void Awake()
-        {
-            BepLogger = this.Logger;
+    {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+
+        BepLogger = this.Logger;
             pluginDir  = Path.GetDirectoryName(typeof(UltimateFixPlugin).Assembly.Location);
             string bepinExDir = Directory.GetParent(pluginDir).FullName;
             configPath = Path.Combine(bepinExDir, "config", "AI2U_Config.json");
