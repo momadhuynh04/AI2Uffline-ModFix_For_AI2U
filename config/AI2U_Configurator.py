@@ -20,6 +20,8 @@ else:
 
 CONFIG_PATH = os.path.join(SCRIPT_DIR, "config", "AI2U_Config.json")
 
+VERSION = "2.9"
+
 # ── Tags ──
 PERSONALITIES = [
     "Passionate", "Dual-faced", "Cute", "Curious", "Obsessive", "Humorous",
@@ -157,23 +159,105 @@ DEFAULTS = {
     "offline_tts_provider": "Piper",
     "offline_piper_model_path": r"C:\Games\AI2U.With.You.Til.The.End.Early.Access\BepInEx\piperweight\en_US-libritts-high.onnx",
     "offline_piper_config_path": r"C:\Games\AI2U.With.You.Til.The.End.Early.Access\BepInEx\piperweight\en_US-libritts-high.onnx.json",
+    "offline_kokoro_model_path": os.path.join(SCRIPT_DIR, "kokoro", "kokoro-v1.0.onnx"),
+    "offline_kokoro_voices_path": os.path.join(SCRIPT_DIR, "kokoro", "voices-v1.0.bin"),
+    "ui_language": "en",
 
 }
 
-# ── Colors ──
-BG           = "#1a1a2e"
-BG_CARD      = "#25254a"
-BG_INPUT     = "#2d2d55"
-BG_HOVER     = "#35356a"
-ACCENT       = "#7c3aed"
-ACCENT_HOVER = "#9055ff"
-TEXT         = "#e8e8f0"
-TEXT_DIM     = "#9898b8"
-TEXT_LABEL   = "#c0c0d8"
-BORDER       = "#3a3a6a"
-SUCCESS      = "#22c55e"
-WARNING      = "#f59e0b"
-ERROR        = "#ef4444"
+# ── Colors ── (dark monochrome: near-black surfaces, white text/accents)
+BG           = "#0f0f10"
+BG_CARD      = "#19191b"
+BG_INPUT     = "#242427"
+BG_HOVER     = "#303034"
+BORDER       = "#3a3a3f"
+ACCENT       = "#f2f2f2"
+ACCENT_HOVER = "#cfcfcf"
+TEXT         = "#f2f2f2"
+TEXT_DIM     = "#9a9aa2"
+TEXT_LABEL   = "#c9c9d0"
+SUCCESS      = "#4ade80"
+WARNING      = "#fbbf24"
+ERROR        = "#f87171"
+
+
+# ── Russian UI strings (UI labels/notes only; config keys & values stay English) ──
+I18N_RU = {
+    "  🔑 API Settings  ": "  🔑 Настройки API  ",
+    "  🎙️ TTS Settings (Voice)  ": "  🎙️ Настройки TTS (голос)  ",
+    "  ⚙️ AI Parameters  ": "  ⚙️ Параметры ИИ  ",
+    "  ✨ NPC Customization (Tags)  ": "  ✨ Настройка NPC (теги)  ",
+    "  📝 System Prompt  ": "  📝 Системный промпт  ",
+    "  📝 Hub World System Prompt  ": "  📝 Системный промпт Hub World  ",
+    "  📝 Post-History Prompt  ": "  📝 Промпт после истории  ",
+
+    "💾  Save Configuration": "💾  Сохранить настройки",
+    "📂  Reload": "📂  Обновить",
+    "🔄  Reset Defaults": "🔄  Сбросить по умолчанию",
+
+    "Language": "Язык",
+
+    "Base URL": "Базовый URL",
+    "API Key": "API-ключ",
+    "Model": "Модель",
+
+    "Enable Custom TTS": "Включить свой TTS",
+    "TTS Mode": "Режим TTS",
+    "Online TTS (API)": "Онлайн TTS (API)",
+    "Offline TTS (Local)": "Локальный TTS (оффлайн)",
+    "TTS Provider": "Провайдер TTS",
+    "TTS Base URL": "Базовый URL TTS",
+    "TTS API Key": "API-ключ TTS",
+    "TTS Model": "Модель TTS",
+    "Azure Region": "Регион Azure",
+    "Offline Provider": "Оффлайн-провайдер",
+    "Model File (.onnx)": "Файл модели (.onnx)",
+    "Config File (.json)": "Файл конфига (.json)",
+    "Kokoro Model (.onnx)": "Модель Kokoro (.onnx)",
+    "Kokoro Voices (.bin)": "Голоса Kokoro (.bin)",
+    "Offline Voice Model": "Оффлайн-голос",
+    "Browse...": "Обзор...",
+
+    "Current Character:": "Текущий персонаж:",
+    "Temperature": "Температура",
+    "Max Tokens": "Макс. токенов",
+    "Frequency Penalty": "Штраф за частоту",
+    "Presence Penalty": "Штраф за присутствие",
+
+    "Personalities": "Личности",
+    "Hobbies": "Увлечения",
+
+    "The API endpoint URL (e.g. OpenRouter, OpenAI)": "URL API-эндпоинта (например, OpenRouter, OpenAI)",
+    "Your API key. Keep this secret!": "Ваш API-ключ. Держите его в секрете!",
+    "Model name (e.g. openai/gpt-4o-mini, google/gemini-flash-1.5)": "Название модели (например, openai/gpt-4o-mini, google/gemini-flash-1.5)",
+    "Master switch. If unchecked, the NPC will be completely mute.": "Главный переключатель. Если выключено — NPC полностью замолчит.",
+    "Choose between Online API (Azure/OpenAI) or Offline Local Voice.": "Выбор между онлайн API (Azure/OpenAI) и локальным голосом (оффлайн).",
+    "Azure for official voices, OpenAI Compatible for custom servers.": "Azure — официальные голоса, OpenAI Compatible — свои серверы.",
+    "Leave blank for default Azure.": "Оставьте пустым для стандартного Azure.",
+    "API Key for Azure TTS or OpenAI.": "API-ключ для Azure TTS или OpenAI.",
+    "Azure voice name (e.g. en-US-JaneNeural) or custom model name.": "Имя голоса Azure (например, en-US-JaneNeural) или своя модель.",
+    "Required for Azure TTS (e.g. eastus, westus).": "Нужно для Azure TTS (например, eastus, westus).",
+    "Select Piper (Offline Engine) or Kokoro (Local API).": "Выберите Piper (оффлайн-движок) или Kokoro (локальный API).",
+    "Select the .onnx weight file.": "Выберите файл веса .onnx.",
+    "Select the .json config file.": "Выберите файл конфига .json.",
+    "Select the Kokoro .onnx model file (bundled: BepInEx/kokoro/kokoro-v1.0.onnx).": "Выберите .onnx модель Kokoro (в комплекте: BepInEx/kokoro/kokoro-v1.0.onnx).",
+    "Select the Kokoro voices file (bundled: BepInEx/kokoro/voices-v1.0.bin).": "Выберите файл голосов Kokoro (в комплекте: BepInEx/kokoro/voices-v1.0.bin).",
+    "Kokoro only (e.g. af_jessica)": "Только для Kokoro (например, af_jessica)",
+    "Higher = more creative/random. Lower = more focused/deterministic.": "Выше — креативнее/случайнее. Ниже — точнее/детерминированнее.",
+    "Nucleus sampling. 0.95 means top 95% probability tokens.": "Nucleus sampling. 0.95 = токены с суммарной вероятностью 95%.",
+    "Limits to top K tokens. 0 = disabled.": "Ограничение до топ-K токенов. 0 = выключено.",
+    "Maximum response length in tokens.": "Максимальная длина ответа в токенах.",
+    "Penalizes repeated tokens. Higher = less repetition.": "Штраф за повтор токенов. Выше — меньше повторов.",
+    "Penalizes tokens already present. Higher = more diverse topics.": "Штраф за уже использованные токены. Выше — разнообразнее темы.",
+    "Tells the AI how to behave and respond. Include JSON format instructions here.": "Описывает, как ИИ должен вести себя и отвечать. Здесь укажите инструкции формата JSON.",
+    "Appended to the game's Atrium prompt when in the Hub World.": "Добавляется к промпту игры (Atrium) в Hub World.",
+    "Appended after chat history to remind the AI of output format.": "Добавляется после истории чата, чтобы напомнить ИИ о формате ответа.",
+
+    "✅ Configuration loaded from file.": "✅ Настройки загружены из файла.",
+    "ℹ️ No config file found. Using defaults.": "ℹ️ Файл настроек не найден. Используются значения по умолчанию.",
+    "⚠️ Warning: API Key is empty!": "⚠️ Внимание: API-ключ пустой!",
+    "🔄 Reset to defaults. Click Save to apply.": "🔄 Сброшено к значениям по умолчанию. Нажмите «Сохранить».",
+}
 
 
 class ToolTip:
@@ -181,6 +265,7 @@ class ToolTip:
     def __init__(self, widget, text):
         self.widget = widget
         self.text = text
+        self.orig = text
         self.tipwindow = None
         widget.bind("<Enter>", self.show)
         widget.bind("<Leave>", self.hide)
@@ -209,7 +294,7 @@ class ToolTip:
 class AI2UConfigurator:
     def __init__(self, root):
         self.root = root
-        self.root.title("AI2U Ultimate Fix - Configurator")
+        self.root.title(f"AI2U Ultimate Fix - Configurator v{VERSION}")
         self.root.geometry("820x920")
         self.root.minsize(700, 700)
         self.root.configure(bg=BG)
@@ -225,9 +310,14 @@ class AI2UConfigurator:
         self.status_var = tk.StringVar(value="")
         self.config = dict(DEFAULTS)
         self.last_selected_char = "Eddie"
+        self.lang = "en"
+        self.lang_var = tk.StringVar(value="English")
+        self._i18n_widgets = []
+        self._tooltips = []
 
         self._build_styles()
         self._build_ui()
+        self._capture_i18n()
         self.last_selected_char = "Eddie"
         
         # Initialize tag vars
@@ -284,6 +374,40 @@ class AI2UConfigurator:
         style.configure("Horizontal.TScale", background=BG_CARD, troughcolor=BG_INPUT,
                          sliderthickness=16)
 
+        # Combobox (readonly dropdowns): dark field, readable text + arrow
+        style.configure("TCombobox",
+                        background=BG_INPUT, fieldbackground=BG_INPUT, foreground=TEXT,
+                        arrowcolor=TEXT, bordercolor=BORDER,
+                        lightcolor=BG_INPUT, darkcolor=BG_INPUT,
+                        selectbackground=BG_INPUT, selectforeground=TEXT,
+                        padding=(8, 5))
+        style.map("TCombobox",
+                  fieldbackground=[("readonly", BG_INPUT), ("disabled", BG_CARD)],
+                  foreground=[("readonly", TEXT), ("disabled", TEXT_DIM)],
+                  background=[("readonly", BG_INPUT), ("active", BG_HOVER)],
+                  arrowcolor=[("active", ACCENT), ("disabled", TEXT_DIM)],
+                  bordercolor=[("focus", ACCENT)])
+
+        # Scrollbar
+        style.configure("Vertical.TScrollbar", background=BG_INPUT, troughcolor=BG,
+                        bordercolor=BG, arrowcolor=TEXT_DIM, relief="flat")
+        style.map("Vertical.TScrollbar", background=[("active", BG_HOVER)])
+
+        # Dropdown popdown list colors
+        self.root.option_add("*TCombobox*Listbox.background", BG_INPUT)
+        self.root.option_add("*TCombobox*Listbox.foreground", TEXT)
+        self.root.option_add("*TCombobox*Listbox.selectBackground", ACCENT)
+        self.root.option_add("*TCombobox*Listbox.selectForeground", BG)
+        self.root.option_add("*TCombobox*Listbox.font", "{Segoe UI} 10")
+
+        # All tk.Entry fields: visible border + focus ring
+        self.root.option_add("*Entry.background", BG_INPUT)
+        self.root.option_add("*Entry.foreground", TEXT)
+        self.root.option_add("*Entry.insertBackground", TEXT)
+        self.root.option_add("*Entry.highlightThickness", 1)
+        self.root.option_add("*Entry.highlightBackground", BORDER)
+        self.root.option_add("*Entry.highlightColor", ACCENT)
+
     def _build_ui(self):
         # ── Scrollable container ──
         outer = tk.Frame(self.root, bg=BG)
@@ -317,8 +441,15 @@ class AI2UConfigurator:
 
         tk.Label(header, text="🎮 AI2U Ultimate Fix", bg=BG, fg=TEXT,
                  font=("Segoe UI", 22, "bold")).pack(side="left")
-        tk.Label(header, text="v8.0 Configurator", bg=BG, fg=TEXT_DIM,
+        tk.Label(header, text=f"v{VERSION} Configurator", bg=BG, fg=TEXT_DIM,
                  font=("Segoe UI", 11)).pack(side="left", padx=(10, 0), pady=(8, 0))
+
+        lang_cb = ttk.Combobox(header, textvariable=self.lang_var, values=["English", "Русский"],
+                               state="readonly", width=10, font=("Segoe UI", 9))
+        lang_cb.pack(side="right", pady=(8, 0))
+        lang_cb.bind("<<ComboboxSelected>>", self._on_lang_change)
+        tk.Label(header, text="Language", bg=BG, fg=TEXT_DIM,
+                 font=("Segoe UI", 10)).pack(side="right", padx=(0, 8), pady=(8, 0))
 
         # ── API Settings ──
         self._build_api_section(container, pad)
@@ -351,9 +482,9 @@ class AI2UConfigurator:
         btn_frame = tk.Frame(container, bg=BG)
         btn_frame.pack(fill="x", padx=15, pady=(10, 5))
 
-        save_btn = tk.Button(btn_frame, text="💾  Save Configuration", bg=ACCENT, fg="white",
+        save_btn = tk.Button(btn_frame, text="💾  Save Configuration", bg=ACCENT, fg="#111111",
                              font=("Segoe UI Semibold", 12), relief="flat", cursor="hand2",
-                             activebackground=ACCENT_HOVER, activeforeground="white",
+                             activebackground=ACCENT_HOVER, activeforeground="#111111",
                              padx=30, pady=10, command=self._save_config)
         save_btn.pack(side="left", padx=(0, 8))
 
@@ -425,6 +556,17 @@ class AI2UConfigurator:
                 self.online_panel.pack_forget()
                 self.offline_panel.pack(fill="x", expand=True)
 
+    def _toggle_offline_provider(self):
+        if not hasattr(self, "kokoro_fields") or not hasattr(self, "piper_fields"):
+            return
+        kokoro = self.offline_tts_provider_var.get() == "Kokoro"
+        show, hide = (self.kokoro_fields, self.piper_fields) if kokoro else (self.piper_fields, self.kokoro_fields)
+        try:
+            hide.grid_remove()
+        except Exception:
+            pass
+        show.grid(row=1, column=0, columnspan=2, sticky="ew")
+
     def _build_tts_section(self, container, pad):
         frame = tk.LabelFrame(container, text="  🎙️ TTS Settings (Voice)  ", bg=BG_CARD, fg=ACCENT,
                               font=("Segoe UI", 11, "bold"), bd=1, relief="solid",
@@ -494,28 +636,55 @@ class AI2UConfigurator:
 
         self._make_label(self.offline_panel, "Offline Provider", 0, "Select Piper (Offline Engine) or Kokoro (Local API).")
         self.offline_tts_provider_var = tk.StringVar(value="Piper")
-        ttk.Combobox(self.offline_panel, textvariable=self.offline_tts_provider_var, values=["Piper", "Kokoro"],
-                     state="readonly", font=("Consolas", 10)).grid(row=0, column=1, sticky="ew", pady=3, ipady=3)
+        prov_cb = ttk.Combobox(self.offline_panel, textvariable=self.offline_tts_provider_var, values=["Piper", "Kokoro"],
+                     state="readonly", font=("Consolas", 10))
+        prov_cb.grid(row=0, column=1, sticky="ew", pady=3, ipady=3)
+        prov_cb.bind("<<ComboboxSelected>>", lambda e: self._toggle_offline_provider())
 
-        self._make_label(self.offline_panel, "Model File (.onnx)", 1, "Select the .onnx weight file.")
-        mod_frame = tk.Frame(self.offline_panel, bg=BG_CARD)
-        mod_frame.grid(row=1, column=1, sticky="ew", pady=3)
+        # Piper files
+        self.piper_fields = tk.Frame(self.offline_panel, bg=BG_CARD)
+        self.piper_fields.columnconfigure(1, weight=1)
+        self.piper_fields.grid(row=1, column=0, columnspan=2, sticky="ew")
+
+        self._make_label(self.piper_fields, "Model File (.onnx)", 0, "Select the .onnx weight file.")
+        piper_mod = tk.Frame(self.piper_fields, bg=BG_CARD)
+        piper_mod.grid(row=0, column=1, sticky="ew", pady=3)
         self.offline_piper_model_path_var = tk.StringVar()
-        tk.Entry(mod_frame, textvariable=self.offline_piper_model_path_var, bg=BG_INPUT, fg=TEXT, font=("Consolas", 9), bd=0).pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 5))
-        tk.Button(mod_frame, text="Browse...", bg=BG_INPUT, fg=TEXT_DIM, font=("Segoe UI", 9), relief="flat", cursor="hand2",
+        tk.Entry(piper_mod, textvariable=self.offline_piper_model_path_var, bg=BG_INPUT, fg=TEXT, font=("Consolas", 9), bd=0).pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 5))
+        tk.Button(piper_mod, text="Browse...", bg=BG_INPUT, fg=TEXT_DIM, font=("Segoe UI", 9), relief="flat", cursor="hand2",
                   command=lambda: self._browse_file(self.offline_piper_model_path_var, "ONNX Files", "*.onnx")).pack(side="right", ipadx=5, ipady=2)
 
-        self._make_label(self.offline_panel, "Config/Voice File", 2, "Piper: .json | Kokoro: voices-v1.0.bin")
-        cfg_frame = tk.Frame(self.offline_panel, bg=BG_CARD)
-        cfg_frame.grid(row=2, column=1, sticky="ew", pady=3)
+        self._make_label(self.piper_fields, "Config File (.json)", 1, "Select the .json config file.")
+        piper_cfg = tk.Frame(self.piper_fields, bg=BG_CARD)
+        piper_cfg.grid(row=1, column=1, sticky="ew", pady=3)
         self.offline_piper_config_path_var = tk.StringVar()
-        tk.Entry(cfg_frame, textvariable=self.offline_piper_config_path_var, bg=BG_INPUT, fg=TEXT, font=("Consolas", 9), bd=0).pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 5))
-        tk.Button(cfg_frame, text="Browse...", bg=BG_INPUT, fg=TEXT_DIM, font=("Segoe UI", 9), relief="flat", cursor="hand2",
-                  command=lambda: self._browse_file(self.offline_piper_config_path_var, "Config Files", "*.*")).pack(side="right", ipadx=5, ipady=2)
+        tk.Entry(piper_cfg, textvariable=self.offline_piper_config_path_var, bg=BG_INPUT, fg=TEXT, font=("Consolas", 9), bd=0).pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 5))
+        tk.Button(piper_cfg, text="Browse...", bg=BG_INPUT, fg=TEXT_DIM, font=("Segoe UI", 9), relief="flat", cursor="hand2",
+                  command=lambda: self._browse_file(self.offline_piper_config_path_var, "Config Files", "*.json")).pack(side="right", ipadx=5, ipady=2)
 
-        self._make_label(self.offline_panel, "Offline Voice Model", 3, "Kokoro only (e.g. af_jessica)")
+        # Kokoro files
+        self.kokoro_fields = tk.Frame(self.offline_panel, bg=BG_CARD)
+        self.kokoro_fields.columnconfigure(1, weight=1)
+
+        self._make_label(self.kokoro_fields, "Kokoro Model (.onnx)", 0, "Select the Kokoro .onnx model file (bundled: BepInEx/kokoro/kokoro-v1.0.onnx).")
+        kok_mod = tk.Frame(self.kokoro_fields, bg=BG_CARD)
+        kok_mod.grid(row=0, column=1, sticky="ew", pady=3)
+        self.offline_kokoro_model_path_var = tk.StringVar()
+        tk.Entry(kok_mod, textvariable=self.offline_kokoro_model_path_var, bg=BG_INPUT, fg=TEXT, font=("Consolas", 9), bd=0).pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 5))
+        tk.Button(kok_mod, text="Browse...", bg=BG_INPUT, fg=TEXT_DIM, font=("Segoe UI", 9), relief="flat", cursor="hand2",
+                  command=lambda: self._browse_file(self.offline_kokoro_model_path_var, "ONNX Files", "*.onnx")).pack(side="right", ipadx=5, ipady=2)
+
+        self._make_label(self.kokoro_fields, "Kokoro Voices (.bin)", 1, "Select the Kokoro voices file (bundled: BepInEx/kokoro/voices-v1.0.bin).")
+        kok_voice = tk.Frame(self.kokoro_fields, bg=BG_CARD)
+        kok_voice.grid(row=1, column=1, sticky="ew", pady=3)
+        self.offline_kokoro_voices_path_var = tk.StringVar()
+        tk.Entry(kok_voice, textvariable=self.offline_kokoro_voices_path_var, bg=BG_INPUT, fg=TEXT, font=("Consolas", 9), bd=0).pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 5))
+        tk.Button(kok_voice, text="Browse...", bg=BG_INPUT, fg=TEXT_DIM, font=("Segoe UI", 9), relief="flat", cursor="hand2",
+                  command=lambda: self._browse_file(self.offline_kokoro_voices_path_var, "Voices Files", "*.bin")).pack(side="right", ipadx=5, ipady=2)
+
+        self._make_label(self.offline_panel, "Offline Voice Model", 2, "Kokoro only (e.g. af_jessica)")
         self.offline_tts_model_var = tk.StringVar()
-        self._make_entry(self.offline_panel, self.offline_tts_model_var, 3)
+        self._make_entry(self.offline_panel, self.offline_tts_model_var, 2)
 
         inner.columnconfigure(1, weight=1)
 
@@ -537,12 +706,12 @@ class AI2UConfigurator:
         char_cb.pack(side="left", ipadx=5, ipady=2)
         char_cb.bind("<<ComboboxSelected>>", self._on_char_select)
 
-        self.temp_var    = tk.DoubleVar(value=0.7)
-        self.topp_var    = tk.DoubleVar(value=0.95)
-        self.topk_var    = tk.IntVar(value=0)
-        self.maxtok_var  = tk.IntVar(value=800)
-        self.freqp_var   = tk.DoubleVar(value=0.03)
-        self.presp_var   = tk.DoubleVar(value=0.03)
+        self.temp_var    = tk.StringVar(value="0.7")
+        self.topp_var    = tk.StringVar(value="0.95")
+        self.topk_var    = tk.StringVar(value="0")
+        self.maxtok_var  = tk.StringVar(value="800")
+        self.freqp_var   = tk.StringVar(value="0.03")
+        self.presp_var   = tk.StringVar(value="0.03")
 
         row = 1
         self._make_number_input(inner, "Temperature", self.temp_var, row,
@@ -628,7 +797,7 @@ class AI2UConfigurator:
                          font=("Segoe UI", 10), anchor="w")
         label.grid(row=row, column=0, sticky="w", padx=(0, 15), pady=3)
         if tooltip:
-            ToolTip(label, tooltip)
+            self._tooltips.append(ToolTip(label, tooltip))
 
     def _make_entry(self, parent, var, row):
         entry = tk.Entry(parent, textvariable=var, bg=BG_INPUT, fg=TEXT,
@@ -641,12 +810,41 @@ class AI2UConfigurator:
                          font=("Segoe UI", 10), anchor="w", width=18)
         label.grid(row=row, column=0, sticky="w", padx=(0, 10), pady=4)
         if tooltip:
-            ToolTip(label, tooltip)
+            self._tooltips.append(ToolTip(label, tooltip))
             
         entry = tk.Entry(parent, textvariable=var, bg=BG_INPUT, fg=TEXT,
                          insertbackground=TEXT, font=("Consolas", 10),
                          relief="flat", bd=0)
         entry.grid(row=row, column=1, sticky="ew", pady=4, ipady=4)
+
+    @staticmethod
+    def _num_to_str(value):
+        return str(value).strip().replace(",", ".")
+
+    @staticmethod
+    def _normalize_num(raw):
+        raw = str(raw).strip().replace(",", ".")
+        return raw.replace("\u00a0", "").replace("\u202f", "").replace(" ", "")
+
+    @staticmethod
+    def _read_float(var, label):
+        raw = AI2UConfigurator._normalize_num(var.get())
+        if raw == "":
+            return 0.0
+        try:
+            return float(raw)
+        except ValueError:
+            raise ValueError(f"{label} must be a number (got '{var.get()}')")
+
+    @staticmethod
+    def _read_int(var, label):
+        raw = AI2UConfigurator._normalize_num(var.get())
+        if raw == "":
+            return 0
+        try:
+            return int(float(raw))
+        except ValueError:
+            raise ValueError(f"{label} must be an integer (got '{var.get()}')")
 
     def _toggle_key(self):
         if self.show_key.get():
@@ -711,12 +909,12 @@ class AI2UConfigurator:
             self.base_url_var.set(self.config["base_url"])
             self.api_key_var.set(self.config["api_key"])
             self.model_var.set(self.config["model"])
-            self.temp_var.set(self.config["temperature"])
-            self.topp_var.set(self.config["top_p"])
-            self.topk_var.set(self.config["top_k"])
-            self.maxtok_var.set(self.config["max_tokens"])
-            self.freqp_var.set(self.config["frequency_penalty"])
-            self.presp_var.set(self.config["presence_penalty"])
+            self.temp_var.set(self._num_to_str(self.config["temperature"]))
+            self.topp_var.set(self._num_to_str(self.config["top_p"]))
+            self.topk_var.set(self._num_to_str(self.config["top_k"]))
+            self.maxtok_var.set(self._num_to_str(self.config["max_tokens"]))
+            self.freqp_var.set(self._num_to_str(self.config["frequency_penalty"]))
+            self.presp_var.set(self._num_to_str(self.config["presence_penalty"]))
 
             self.tts_enable_var.set(self.config.get("tts_enable", DEFAULTS["tts_enable"]))
             self.tts_mode_var.set(self.config.get("tts_mode", DEFAULTS["tts_mode"]))
@@ -728,6 +926,8 @@ class AI2UConfigurator:
             self.offline_tts_provider_var.set(self.config.get("offline_tts_provider", DEFAULTS["offline_tts_provider"]))
             self.offline_piper_model_path_var.set(self.config.get("offline_piper_model_path", DEFAULTS["offline_piper_model_path"]))
             self.offline_piper_config_path_var.set(self.config.get("offline_piper_config_path", DEFAULTS["offline_piper_config_path"]))
+            self.offline_kokoro_model_path_var.set(self.config.get("offline_kokoro_model_path", DEFAULTS["offline_kokoro_model_path"]))
+            self.offline_kokoro_voices_path_var.set(self.config.get("offline_kokoro_voices_path", DEFAULTS["offline_kokoro_voices_path"]))
 
             self.current_char_var.set("Eddie")
             self.last_selected_char = "Eddie"
@@ -754,22 +954,34 @@ class AI2UConfigurator:
                 self.hobby_vars[tag].set(tag in self.char_tags["eddie"]["hobbies"])
             
             self._toggle_tts_panels()
+            self._toggle_offline_provider()
+
+            self.lang = self.config.get("ui_language", "en")
+            self.lang_var.set("Русский" if self.lang == "ru" else "English")
+            self._apply_language()
 
         except Exception as e:
             self._set_status(f"❌ Error loading config: {e}", ERROR)
 
     def _save_config(self):
         try:
+            temperature       = round(self._read_float(self.temp_var, "Temperature"), 2)
+            top_p             = round(self._read_float(self.topp_var, "Top P"), 2)
+            top_k             = self._read_int(self.topk_var, "Top K")
+            max_tokens        = self._read_int(self.maxtok_var, "Max Tokens")
+            frequency_penalty = round(self._read_float(self.freqp_var, "Frequency Penalty"), 2)
+            presence_penalty  = round(self._read_float(self.presp_var, "Presence Penalty"), 2)
+
             data = {
                 "base_url":             self.base_url_var.get().strip(),
                 "api_key":              self.api_key_var.get().strip(),
                 "model":                self.model_var.get().strip(),
-                "temperature":          round(self.temp_var.get(), 2),
-                "top_p":                round(self.topp_var.get(), 2),
-                "top_k":                self.topk_var.get(),
-                "max_tokens":           self.maxtok_var.get(),
-                "frequency_penalty":    round(self.freqp_var.get(), 2),
-                "presence_penalty":     round(self.presp_var.get(), 2),
+                "temperature":          temperature,
+                "top_p":                top_p,
+                "top_k":                top_k,
+                "max_tokens":           max_tokens,
+                "frequency_penalty":    frequency_penalty,
+                "presence_penalty":     presence_penalty,
                 "tts_enable":           self.tts_enable_var.get(),
                 "tts_mode":             self.tts_mode_var.get(),
                 "tts_provider":         self.tts_provider_var.get(),
@@ -779,6 +991,9 @@ class AI2UConfigurator:
                 "offline_tts_provider": self.offline_tts_provider_var.get().strip(),
                 "offline_piper_model_path": self.offline_piper_model_path_var.get().strip(),
                 "offline_piper_config_path": self.offline_piper_config_path_var.get().strip(),
+                "offline_kokoro_model_path": self.offline_kokoro_model_path_var.get().strip(),
+                "offline_kokoro_voices_path": self.offline_kokoro_voices_path_var.get().strip(),
+                "ui_language": self.lang,
             }
 
             prev = self.last_selected_char.lower()
@@ -814,15 +1029,16 @@ class AI2UConfigurator:
     def _reset_defaults(self):
         if messagebox.askyesno("Reset to Defaults", "Reset all settings to defaults?\nThis won't save until you click Save."):
             self.config = dict(DEFAULTS)
+            self.config["ui_language"] = self.lang
             self.base_url_var.set(DEFAULTS["base_url"])
             self.api_key_var.set(DEFAULTS["api_key"])
             self.model_var.set(DEFAULTS["model"])
-            self.temp_var.set(DEFAULTS["temperature"])
-            self.topp_var.set(DEFAULTS["top_p"])
-            self.topk_var.set(DEFAULTS["top_k"])
-            self.maxtok_var.set(DEFAULTS["max_tokens"])
-            self.freqp_var.set(DEFAULTS["frequency_penalty"])
-            self.presp_var.set(DEFAULTS["presence_penalty"])
+            self.temp_var.set(self._num_to_str(DEFAULTS["temperature"]))
+            self.topp_var.set(self._num_to_str(DEFAULTS["top_p"]))
+            self.topk_var.set(self._num_to_str(DEFAULTS["top_k"]))
+            self.maxtok_var.set(self._num_to_str(DEFAULTS["max_tokens"]))
+            self.freqp_var.set(self._num_to_str(DEFAULTS["frequency_penalty"]))
+            self.presp_var.set(self._num_to_str(DEFAULTS["presence_penalty"]))
             self.tts_enable_var.set(DEFAULTS["tts_enable"])
             self.tts_mode_var.set(DEFAULTS["tts_mode"])
             self.tts_provider_var.set(DEFAULTS["tts_provider"])
@@ -832,6 +1048,8 @@ class AI2UConfigurator:
             self.offline_tts_provider_var.set(DEFAULTS["offline_tts_provider"])
             self.offline_piper_model_path_var.set(DEFAULTS["offline_piper_model_path"])
             self.offline_piper_config_path_var.set(DEFAULTS["offline_piper_config_path"])
+            self.offline_kokoro_model_path_var.set(DEFAULTS["offline_kokoro_model_path"])
+            self.offline_kokoro_voices_path_var.set(DEFAULTS["offline_kokoro_voices_path"])
             
             for ch in ["eddie", "elysia", "estelle", "eiona"]:
                 self.config[f"{ch}_system_prompt"] = DEFAULTS[f"{ch}_system_prompt"]
@@ -859,9 +1077,50 @@ class AI2UConfigurator:
                 self.hobby_vars[tag].set(False)
                 
             self._toggle_tts_panels()
+            self._toggle_offline_provider()
             self._set_status("🔄 Reset to defaults. Click Save to apply.", WARNING)
 
+    def _capture_i18n(self):
+        self._i18n_widgets = []
+
+        def walk(w):
+            try:
+                t = w.cget("text")
+            except Exception:
+                t = ""
+            try:
+                tv = w.cget("textvariable")
+            except Exception:
+                tv = ""
+            if t and not tv:
+                self._i18n_widgets.append((w, t))
+            for child in w.winfo_children():
+                walk(child)
+
+        walk(self.root)
+
+    def _tr(self, text):
+        if self.lang == "ru":
+            return I18N_RU.get(text, text)
+        return text
+
+    def _apply_language(self):
+        for w, orig in self._i18n_widgets:
+            try:
+                w.configure(text=self._tr(orig))
+            except Exception:
+                pass
+        for tt in self._tooltips:
+            tt.text = self._tr(tt.orig)
+
+    def _on_lang_change(self, event=None):
+        self.lang = "ru" if self.lang_var.get() == "Русский" else "en"
+        self.config["ui_language"] = self.lang
+        self._apply_language()
+
     def _set_status(self, msg, color=TEXT):
+        if self.lang == "ru" and msg in I18N_RU:
+            msg = I18N_RU[msg]
         self.status_var.set(msg)
         self.status_label.configure(fg=color)
         # Auto-clear after 5 seconds
