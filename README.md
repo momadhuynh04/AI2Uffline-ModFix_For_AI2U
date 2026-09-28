@@ -10,7 +10,7 @@ reroutes the NPC dialogue + voice to **your own LLM API and TTS provider**.
 >
 > **If you enjoy the game, please buy it — it is only $15.**
 
-![gameplay](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/image.png)
+![gameplay](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/2.9preview.png)
 ---
 
 ## 📥 Download
@@ -202,7 +202,7 @@ Tested through OpenRouter (`base_url` = `https://openrouter.ai/api/v1/chat/compl
 | `nvidia/nemotron-3-ultra-550b-a55b` | ✅ works |
 | `qwen/qwen3.8-flash` | ✅ works |
 | `z-ai/glm-5.3-flash` | ✅ works |
-| `deepseek/deepseek-v4-flash` | ✅ works |
+| `deepseek/deepseek-v4-flash(4023)` | ✅ works |
 | `deepseek/deepseek-v4.1-flash` | ❌ error |
 | `deepseek/deepseek-v4-flash-0731` | ❌ error |
 
@@ -219,6 +219,12 @@ Tested through OpenRouter (`base_url` = `https://openrouter.ai/api/v1/chat/compl
 
 ---
 
+Russian config preview: 
+![ru gui 1](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/ruui1.png)
+![ru gui 2](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/ruui2.png)
+
+
+---
 # 🇷🇺 Русский
 
 Модификация/фикс для **AI2U: With You Til The End**.
