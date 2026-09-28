@@ -10,6 +10,7 @@ reroutes the NPC dialogue + voice to **your own LLM API and TTS provider**.
 >
 > **If you enjoy the game, please buy it — it is only $15.**
 
+![gameplay](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/image.png)
 ---
 
 ## 📥 Download
