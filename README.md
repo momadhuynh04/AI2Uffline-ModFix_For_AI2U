@@ -1,283 +1,439 @@
-# AI2U - Offline Mod & Infinite Loading Fix
+# AI2U — Offline Mod & Infinite Loading Fix · **v2.9**
 
-## Overview
+A modification/fix for **AI2U: With You Til The End**.
 
-A comprehensive modification and fix for **AI2U: With You Til The End** .
+The cracked build hangs on an **infinite loading screen** because the official Steam/PlayFab
+servers are blocked. This fix removes that login entirely, builds a local save system, and
+reroutes the NPC dialogue + voice to **your own LLM API and TTS provider**.
 
-This is **not** a traditional mod — it fixes the crack version of the game (Skidrow v0.7.12.2, latest as of 23/05/2026) that suffers from an **infinite loading screen** or connection errors due to the official servers being blocked.
-
-If you've already tried adding `steam_api64.dll` and `steam_appid.txt` with no luck, and you just want to experience the gameplay — this is for you.
-
-> **Note:** This fix has only been tested on Skidrow v0.7.12.2. Other versions are not guaranteed to work.
+> Tested on the **Skidrow v0.7.12.2** build. Other versions are not guaranteed to work.
 >
-> **If you enjoy the game, please buy it — it's only $15.**
-
-![gameplay](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/image.png)
----
-
-## 📥 Download
-
-> Link in notepad : https://anotepad.com/notes/ngjhjg6s
->
-> Full game + fix v2.8 — content all file to run.
-> please read file **this file carefully** before playing.
+> **If you enjoy the game, please buy it — it is only $15.**
 
 ---
 
-## How It Works
+# 🇬🇧 English
 
-The game's dialogue system is rerouted to your own custom LLM API instead of the dead official servers. You'll need:
+## What's new in v2.9
 
-- **An LLM** — either running locally or via an API key. The game sends requests (sometimes with base64-encoded images for TV/drawing scenarios), so a model with vision support is recommended.
-- **A TTS provider** — the game also uses TTS. Azure TTS is recommended (free tier: 500,000 words/month). OpenAI TTS also works.
+- **Redesigned Configurator** — darker, higher-contrast theme; dropdowns and input fields are
+  now clearly readable.
+- **English / Russian UI** — switch language from the top-right corner of the Configurator.
+  (Only the interface is translated; config keys and values stay English.)
+- **Fixed a decimal/locale bug** — on Windows set to a comma decimal separator
+  (Russian, Vietnamese, German, French, …), values like `temperature`, `top_p`,
+  `frequency_penalty`, `presence_penalty` used to silently become `0` (or ×100). Now they are
+  read correctly, and the Configurator accepts both `,` and `.` and always writes a dot.
+- **Fixed over-precise sampling values** in the request payload (e.g. `0.949999988079071` → `0.95`).
+- **Kokoro offline TTS now bundled** — ships with its own portable Python environment, so players
+  do **not** need a system-wide Python install. Separate fields for the Kokoro model and voices.
+- Item purchasing, Dream OS level 1 passwords, Hub World chat, and chapter unlocks from v2.8 remain.
 
-### LLM Recommendations
+## Requirements
 
-| Model | Type | Notes |
-|-------|------|-------|
-| **GPT-OSS 20B / Nemotron 3 Nano Omni** | Free (OpenRouter) | Recommended free option. Supports image input. |
-| **DeepSeek V4 Flash** | Paid | Best response quality and speed. |
-| **Qwen 2.5 3B Coder Instruct** | Local | Works but has parsing errors. |
+- Windows 10/11 (x64).
+- The game (Skidrow v0.7.12.2).
+- An internet connection for the LLM API (and the first Kokoro setup, if needed).
+- **No Python installation required** — everything ships with the mod.
 
-> For local models, use a **coder-type** model rather than a roleplay model — the output must be valid JSON for the game to parse correctly.
+## Installation (from scratch)
 
-### TTS Recommendations
+1. **Extract** the full package into your game folder. You should end up with:
 
-- **Azure TTS** — Free tier provides 500,000 words/month. No need to configure a base URL; the code handles it. Find voices at [json2video.com](https://json2video.com). Recommended: `en-AU-CarlyNeural`.
-- **OpenAI TTS** — Alternative if Azure is unavailable.
+   ```
+   AI2U - With you til the end.exe
+   AI2U - With you til the end_Data/
+   BepInEx/
+   doorstop_config.ini
+   winhttp.dll
+   ```
 
----
+   If `BepInEx/`, `doorstop_config.ini` or `winhttp.dll` are missing, re-extract — BepInEx is
+   what injects the mod.
 
-## Version History
+2. **Open the Configurator:** run `BepInEx\AI2U_Configurator.exe`.
 
-### v2.8 (05/06/2026)
+3. **Enter your AI settings** (see *Configuration* below) and click **Save Configuration**.
 
-- Added more TTS configs: Piper TTS & Kokoro (local)
-- Added prompt routing per character
-- Added game context and tag injection
-- Added chat history injection to request payload
-- Added manual tag management (via `AI2U_Configurator.exe`)
-- Fixed item purchasing in-game
-- Fixed Dream OS level 1 (PC/WiFi password dialogue)
-- Fixed Hub World invitation (chat in Hall now works)
-- Unlocked all levels (legit this time)
+4. **Play:** launch `AI2U - With you til the end.exe`.
 
-### Notes
+> If the game does not start, run it as Administrator or temporarily disable Windows Defender.
 
-- **Local TTS:** GPT-SoVITS recommended for quality; Kokoro for lightweight use. Change voice via the training template.
-- **Tag Management:** Saving/injection of tags was unreliable, so it's handled manually through `AI2U_Configurator.exe`. Add personality and hobby tags yourself.
-- **Character Prompts:** I dug through game source for every character's prompt except the last one. You'll need to write that one yourself.
+## Configuration (Configurator v2.9)
 
-> Bug reports: Thanks to **Kora**.
->
-> **This quest ends June 5th, 2026. No further updates.**
+Everything is set in one window: `BepInEx\AI2U_Configurator.exe`. It saves to
+`BepInEx\config\AI2U_Config.json`.
 
----
+> ⚠️ **Never share `AI2U_Config.json`** — it contains your API key.
 
-## Features
+Do the steps in order. Only **Step 2 (API)** is required; everything else already has good defaults.
 
-| Feature | Status |
-|---------|--------|
-| **Offline Play & Auth Bypass** | Working |
-| **Custom LLM Integration (AI Proxy)** | Working |
-| **Infinite Currency & Local Shop Save** | Working |
-| **Unlocked NPCs (no Favor Meter)** | Working |
-| **Hidden Chapters 2–4 Unlocked** | Working |
-| **Item Lookup Fix** | Working |
+### Step 1 — Open the Configurator
 
-- **Offline Play & Auth Bypass:** Completely removes Steam and PlayFab login. Fixes startup screen freeze and network connection crashes.
-- **Custom LLM Integration:** Replaces the default Azure AI backend. Route NPC chat to OpenRouter, OpenAI, or any compatible API using your own key and model.
-- **Infinite Currency & Local Save:** Grants 999,999,999 Tokens. Built a custom local save system (`ES3`) — cosmetics, items, and Persona tags are permanently saved locally.
-- **Unlocked NPCs:** All NPCs are fully unlocked from the start — no Favor Meter grind required.
-- **Hidden Chapters:** Chapters 2, 3, and 4 are forcibly unlocked (normally behind "Coming Soon" or "Unlock to reveal" in Early Access).
-- **Item Lookup Fix:** Fixes case-sensitivity bugs — saved shop items load and equip correctly every launch.
+Double-click `BepInEx\AI2U_Configurator.exe`. No installation needed.
 
----
+The window is one scrollable page with these sections, top to bottom:
+**API Settings** → **TTS Settings (Voice)** → **AI Parameters** → **NPC Customization (Tags)** →
+**System Prompt** → **Hub World System Prompt** → **Post-History Prompt** →
+**Save / Reload / Reset** buttons → status bar (bottom-left).
 
-## Installation
-## Please download the game form the link, the bypass login phase some how have troubles to push, that is the must replace file for the game to work 
+### Step 2 — API Settings (required)
 
-### Download
+| Field | Example (OpenRouter) | Notes |
+|-------|----------------------|-------|
+| **Base URL** | `https://openrouter.ai/api/v1/chat/completions` | The full chat-completions endpoint. OpenAI: `https://api.openai.com/v1/chat/completions`. Local (Ollama / LM Studio): `http://127.0.0.1:PORT/v1/chat/completions`. |
+| **API Key** | `sk-or-v1-...` | Your key. Leave empty **only** for a local server. |
+| **Model** | `deepseek/deepseek-v4-flash` | Any model from the *Tested models* list. |
 
-Full game with fix v2.8: go to my github profile, on readme.md access my page there you will have the download link of full game playable
+This is the only mandatory part. Without a valid key + model, the NPC won't reply.
 
-**Read the included `ReadMe.txt` before proceeding.**
+### Step 3 — AI Parameters (keep the defaults)
 
-### Prerequisites
+| Field | Recommended |
+|-------|-------------|
+| Temperature | `1.1` |
+| Top P | `0.95` |
+| Top K | `0` |
+| Max Tokens | `2050` |
+| Frequency Penalty | `0.05` |
+| Presence Penalty | `0.05` |
 
-**BepInEx v5.x** is required. Download the x64 version (tested with v5.4.21.0) from the [BepInEx GitHub](https://github.com/BepInEx/BepInEx).
+You can type `,` or `.` as the decimal separator — the Configurator always saves a dot.
 
-Extract directly into your game root folder. You should see:
-- A `BepInEx/` folder
-- `doorstop_config.ini`
-- `winhttp.dll`
+### Step 4 — Pick a voice (TTS)
 
-If any are missing, re-extract.
+Tick **Enable Custom TTS**, then choose **one** of the paths below and configure only that one.
 
-### Steps
+**A. Online — Azure** (best quality; free tier 500,000 chars/month)
+1. **TTS Mode** = `Online TTS (API)`, **TTS Provider** = `Azure`.
+2. Fill **TTS API Key** and **Azure Region** (e.g. `eastus`).
+3. Leave **TTS Base URL** empty.
+4. **TTS Model** = a voice name, e.g. `en-US-JaneNeural`.
 
-1. **Download and extract** this repo as a ZIP.
+**B. Online — OpenAI Compatible** (or any local TTS server)
+1. **TTS Mode** = `Online TTS (API)`, **TTS Provider** = `OpenAI Compatible`.
+2. **TTS Base URL** = your server root, e.g. `http://127.0.0.1:8880/v1` (empty = OpenAI itself).
+3. **TTS API Key** = your key (may be empty for a local server).
+4. **TTS Model** = voice / model name.
 
-2. **Replace `Assembly-CSharp.dll`:**
-   - Copy `Assembly-CSharp.dll` from the repo's `core/` folder.
-   - Paste into `Your_Game_Root/AI2U - With you til the end_Data/Managed/`.
-   - Overwrite when prompted.
-   - *Recommendation: rename the original to `Assembly-CSharp.dll.bak` as a backup.*
-   - *This DLL was modified with dnSpy to bypass Steam/PlayFab login paths.*
+**C. Offline — Kokoro** (recommended; fully bundled, no internet at play time)
+1. **TTS Mode** = `Offline TTS (Local)`, **Offline Provider** = `Kokoro`.
+2. **Kokoro Model (.onnx)** and **Kokoro Voices (.bin)** are pre-filled to the bundled files in
+   `BepInEx\kokoro\` — leave them as they are.
+3. **Offline Voice Model** = a Kokoro voice, e.g. `af_jessica`, `af_bella`, `af_sarah`, `af_sky`.
+4. Click **💾 Save Configuration**.
+5. **Run `BepInEx\setup_kokoro_env.bat` ONCE — only if the `BepInEx\python` folder does not exist.**
+   It downloads a portable Python and the Kokoro packages into `BepInEx\python` (needs internet,
+   takes a few minutes). If `BepInEx\python` is already present, skip this step.
 
-3. **Install the plugin:**
-   - Copy `AI2U_Configurator.dll` from the repo's `core/` folder.
-   - Paste into `Your_Game_Root/BepInEx/plugins/`.
-   - *This reroutes the game to your custom AI configuration instead of the official server.*
+**D. Offline — Piper**
+1. **TTS Mode** = `Offline TTS (Local)`, **Offline Provider** = `Piper`.
+2. **Model File (.onnx)** = `BepInEx\piperweight\en_US-libritts-high.onnx`.
+3. **Config File (.json)** = the matching `.json` next to it.
 
-4. **Configure your AI settings:**
-   - Run the game once to generate `Config.json` (or `AI2U_Config.json`).
-   - Close the game and open the JSON file in any text editor.
-   - Fill in your API details (see Configuration section below).
-   - Alternatively, copy the `Config.json` from the repo. If it fails, rename it to `AI2U_Config.json` (or vice versa).
+The game launches and stops the local Kokoro server (port `8880`) automatically.
 
-5. **Launch and play.**
+### Step 5 — Character, prompts and tags
 
----
+1. Pick a character in **Current Character** (Eddie, Elysia, Estelle, Eiona). Prompts and tags are
+   stored **separately per character** — switching keeps each one's settings.
+2. Edit **System Prompt** (main levels), **Hub World System Prompt** (Atrium) and
+   **Post-History Prompt** (output-format reminder).
+   > Keep the JSON-format instructions that are already in the prompt — the game needs valid JSON.
+3. Under **NPC Customization (Tags)**, tick the **Personalities** and **Hobbies** you want injected.
 
-## Configuration
+### Step 6 — Save, then play
 
-### `Config.json` / `AI2U_Config.json`
+1. Click **💾 Save Configuration** — a green confirmation appears in the status bar.
+2. Close the Configurator and launch `AI2U - With you til the end.exe`.
+3. Optional: the **Language** dropdown (top-right) switches the interface between `English` and
+   `Русский`. It only changes labels/notes, never the config keys or values.
+
+### Config file reference
+
+The GUI writes `BepInEx\config\AI2U_Config.json`. You can also edit it by hand:
 
 ```json
 {
-  "base_url": "https://api.openai.com/v1/chat/completions",
-  "api_key": "your-api-key-here",
-  "model": "gpt-oss-20b",
-  "system_prompt": "Use the system prompt from prompt.txt for best results",
-  "post_history_prompt": "Same as system prompt",
-  "temperature": 0.9,
+  "base_url": "https://openrouter.ai/api/v1/chat/completions",
+  "api_key": "sk-or-v1-...",
+  "model": "deepseek/deepseek-v4-flash",
+  "temperature": 1.1,
   "top_p": 0.95,
   "top_k": 0,
   "max_tokens": 2050,
   "frequency_penalty": 0.05,
   "presence_penalty": 0.05,
   "tts_enable": true,
-  "tts_provider": "azure",
-  "tts_base_url": "",
-  "tts_api_key": "your-tts-key-here",
-  "tts_model": "en-AU-CarlyNeural",
-  "tts_region": "your-azure-region"
+  "tts_mode": "Offline",
+  "offline_tts_provider": "Kokoro",
+  "offline_kokoro_model_path": "...\\BepInEx\\kokoro\\kokoro-v1.0.onnx",
+  "offline_kokoro_voices_path": "...\\BepInEx\\kokoro\\voices-v1.0.bin",
+  "eddie_offline_tts_model": "af_jessica",
+  "ui_language": "en"
 }
 ```
 
-| Field | Description |
-|-------|-------------|
-| `base_url` | API endpoint (e.g., `https://api.openai.com/v1/chat/completions`, OpenRouter URL, or local endpoint) |
-| `api_key` | Your API key. Skip if running locally. |
-| `model` | Model name (e.g., `gpt-oss-20b`, `deepseek-v4-flash`) |
-| `system_prompt` | System prompt for the AI; use `prompt.txt` for best results |
-| `post_history_prompt` | Same as system prompt |
-| `temperature` | Creativity (0.0–2.0). Too high = gibberish. |
-| `top_p` | Nucleus sampling; limits word choice pool |
-| `top_k` | Top-K sampling |
-| `max_tokens` | Maximum output tokens |
-| `frequency_penalty` | Penalizes repeated tokens |
-| `presence_penalty` | Penalizes repeated topics |
-| `tts_enable` | Enable/disable TTS |
-| `tts_provider` | `azure` or `openai` |
-| `tts_base_url` | Leave empty for Azure |
-| `tts_api_key` | TTS API key |
-| `tts_model` | Voice model (e.g., `en-AU-CarlyNeural`) |
-| `tts_region` | Azure service region (closer = faster) |
+| Key | Meaning |
+|-----|---------|
+| `tts_mode` | `"Offline"` = Piper / Kokoro, `"Online"` = Azure / OpenAI Compatible. |
+| `offline_tts_provider` | `"Piper"` or `"Kokoro"` (used when `tts_mode` = `Offline`). |
+| `tts_provider` | `"Azure"` or `"OpenAI Compatible"` (used when `tts_mode` = `Online`). |
+| `<char>_offline_tts_model` | Kokoro voice for that character (`eddie_`, `elysia_`, `estelle_`, `eiona_`). |
+| `ui_language` | `"en"` or `"ru"` (Configurator interface language). |
 
-### GUI Configurator (Python)
+## Tested LLM models
 
-A GUI tool is included for easier configuration. Requires **Python 3** (no virtual environment needed — only built-in libraries).
+Tested through OpenRouter (`base_url` = `https://openrouter.ai/api/v1/chat/completions`):
 
-1. Place `Configuratorv1.2.py` and `Configurator.bat` into `Your_Game_Root/BepInEx/`.
-2. Run `Configurator.bat`.
+| Model | Result |
+|-------|--------|
+| `dots-studio/dots-3-note-preview:free` | ✅ works |
+| `nvidia/nemotron-3-ultra-550b-a55b` | ✅ works |
+| `qwen/qwen3.8-flash` | ✅ works |
+| `z-ai/glm-5.3-flash` | ✅ works |
+| `deepseek/deepseek-v4-flash` | ✅ works |
+| `deepseek/deepseek-v4.1-flash` | ❌ error |
+| `deepseek/deepseek-v4-flash-0731` | ❌ error |
 
-![GUI Screenshot 1](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/image_2026-06-05_145105812.png)
-![GUI Screenshot 2](https://raw.githubusercontent.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U/refs/heads/main/config/image_2026-06-05_151759788.png)
+> The model must return **valid JSON** (the game parses the reply). Models that wrap the answer in
+> markdown or extra text may fail — the mod strips ```` ```json ```` fences, but not arbitrary prose.
 
-> AI parameters in the GUI may not work — adjust them directly in the JSON file above.
+## Logs & troubleshooting
+
+- Mod log: `BepInEx\UltimateFix_Debug.txt` (shows the exact request payload sent to the API).
+- BepInEx log: `BepInEx\LogOutput.log`.
+- NPC speaks nothing → check the TTS mode/provider and (for Kokoro) that `BepInEx\python` exists.
+- No reply from the NPC → check the API key, credits, and internet connection.
+- Game won't launch → run as Administrator or disable Windows Defender.
 
 ---
 
-## AI2U Configurator — User Guide (v2.5)
+# 🇷🇺 Русский
 
-The **AI2U Configurator** lets you redirect the game's dialogue system to your own API and fully customize each character's personality.
+Модификация/фикс для **AI2U: With You Til The End**.
 
-### Step 1: Launch
+Пиратская сборка зависает на **бесконечном экране загрузки**, потому что официальные серверы
+Steam/PlayFab заблокированы. Этот фикс полностью убирает вход, создаёт локальную систему
+сохранений и перенаправляет диалоги и озвучку NPC на **ваш собственный LLM API и TTS**.
 
-Double-click `AI2U_Configurator.exe` in the game root directory. No extra installations needed.
+> Протестировано на сборке **Skidrow v0.7.12.2**. На других версиях не гарантируется.
+>
+> **Если игра понравилась — купите её, она стоит всего $15.**
 
-### Step 2: API Setup
+## Что нового в v2.9
 
-- **Custom API URL:** Your API endpoint (OpenAI, OpenRouter, Ollama, LM Studio, etc.)
-- **Custom API Key:** Your API key (`sk-...`). Stored locally and securely.
+- **Обновлённый Configurator** — более тёмная и контрастная тема; выпадающие списки и поля ввода
+  теперь хорошо читаются.
+- **Интерфейс на английском и русском** — переключение языка в правом верхнем углу Configurator.
+  (Переведён только интерфейс; ключи и значения конфига остаются на английском.)
+- **Исправлен баг с разделителем дробей** — в Windows с запятой в качестве десятичного
+  разделителя (русский, вьетнамский, немецкий, французский…) значения `temperature`, `top_p`,
+  `frequency_penalty`, `presence_penalty` молча становились `0` (или умножались на 100). Теперь
+  они читаются корректно, а Configurator принимает и `,`, и `.` и всегда сохраняет точку.
+- **Исправлены слишком длинные значения** параметров в запросе (например, `0.949999988079071` → `0.95`).
+- **Kokoro (оффлайн TTS) теперь в комплекте** — со своим портативным Python, поэтому игрокам
+  **не нужен** системный Python. Отдельные поля для модели и голосов Kokoro.
+- Покупки предметов, пароли Dream OS уровня 1, чат в Hub World и разблокировка глав из v2.8 сохранены.
 
-> ⚠️ **Never share your `AI2U_Config.json`** (in `BepInEx/config/`) without removing your API key — it contains sensitive access tokens.
+## Требования
 
-### Step 3: Character Customization
+- Windows 10/11 (x64).
+- Игра (Skidrow v0.7.12.2).
+- Интернет для LLM API (и для первой настройки Kokoro, если потребуется).
+- **Python устанавливать не нужно** — всё идёт в комплекте с модом.
 
-Select a character from the left panel (Estelle, Eiona, etc.).
+## Установка (с нуля)
 
-#### 3.1 In-Game System Prompt (Main Levels)
+1. **Распакуйте** полный архив в папку с игрой. В итоге должно быть:
 
-Sets context and behavior for the character during main gameplay. Modify freely to change personality (Yandere, Tsundere, etc.).
+   ```
+   AI2U - With you til the end.exe
+   AI2U - With you til the end_Data/
+   BepInEx/
+   doorstop_config.ini
+   winhttp.dll
+   ```
 
-#### 3.2 Hub World System Prompt (Atrium / Waiting Room)
+   Если нет `BepInEx/`, `doorstop_config.ini` или `winhttp.dll` — распакуйте заново: именно BepInEx
+   подключает мод.
 
-The Hub World **requires strict JSON output** so the game engine can parse and control animations. Paste this formatting block and add your custom lore/context above it:
+2. **Откройте Configurator:** запустите `BepInEx\AI2U_Configurator.exe`.
 
-```text
-All replies should be strictly using JSON Format!
-As an NPC in a video game, reply with JSON code to reflect your current state.
+3. **Введите настройки ИИ** (см. *Настройка* ниже) и нажмите **Save Configuration**.
 
-Input format:
-(npc_trust_level, npc_location, npc_action, player_location, player_action, npc_inventory, story_guide, sentence_from_player)
+4. **Играйте:** запустите `AI2U - With you til the end.exe`.
 
-Output format:
+> Если игра не запускается — запустите от имени администратора или временно отключите Windows Defender.
+
+## Настройка (Configurator v2.9)
+
+Всё настраивается в одном окне: `BepInEx\AI2U_Configurator.exe`. Сохраняется в
+`BepInEx\config\AI2U_Config.json`.
+
+> ⚠️ **Никому не передавайте `AI2U_Config.json`** — там ваш API-ключ.
+
+Выполняйте шаги по порядку. Обязателен только **шаг 2 (API)** — у остального уже есть хорошие
+значения по умолчанию.
+
+### Шаг 1 — Откройте Configurator
+
+Запустите `BepInEx\AI2U_Configurator.exe` (двойной клик). Устанавливать ничего не нужно.
+
+Окно — одна прокручиваемая страница с разделами сверху вниз:
+**API Settings** → **TTS Settings (Voice)** → **AI Parameters** → **NPC Customization (Tags)** →
+**System Prompt** → **Hub World System Prompt** → **Post-History Prompt** →
+кнопки **Save / Reload / Reset** → строка состояния (слева внизу).
+
+### Шаг 2 — API Settings (обязательно)
+
+| Поле | Пример (OpenRouter) | Примечание |
+|------|---------------------|------------|
+| **Base URL** | `https://openrouter.ai/api/v1/chat/completions` | Полный адрес chat completions. OpenAI: `https://api.openai.com/v1/chat/completions`. Локально (Ollama / LM Studio): `http://127.0.0.1:ПОРТ/v1/chat/completions`. |
+| **API Key** | `sk-or-v1-...` | Ваш ключ. Пусто — **только** для локального сервера. |
+| **Model** | `deepseek/deepseek-v4-flash` | Любая модель из списка *Проверенные модели*. |
+
+Это единственная обязательная часть. Без рабочего ключа и модели NPC не будет отвечать.
+
+### Шаг 3 — AI Parameters (оставьте значения по умолчанию)
+
+| Поле | Рекомендуется |
+|------|----------------|
+| Temperature | `1.1` |
+| Top P | `0.95` |
+| Top K | `0` |
+| Max Tokens | `2050` |
+| Frequency Penalty | `0.05` |
+| Presence Penalty | `0.05` |
+
+Разделитель дробей можно вводить как `,`, так и `.` — Configurator всегда сохраняет точку.
+
+### Шаг 4 — Выберите голос (TTS)
+
+Поставьте галочку **Enable Custom TTS**, затем выберите **один** из вариантов ниже и настройте
+только его.
+
+**A. Онлайн — Azure** (лучшее качество; бесплатный тариф 500 000 символов/мес)
+1. **TTS Mode** = `Online TTS (API)`, **TTS Provider** = `Azure`.
+2. Заполните **TTS API Key** и **Azure Region** (например `eastus`).
+3. **TTS Base URL** оставьте пустым.
+4. **TTS Model** = имя голоса, например `en-US-JaneNeural`.
+
+**B. Онлайн — OpenAI Compatible** (или свой локальный TTS-сервер)
+1. **TTS Mode** = `Online TTS (API)`, **TTS Provider** = `OpenAI Compatible`.
+2. **TTS Base URL** = корень сервера, например `http://127.0.0.1:8880/v1` (пусто = сам OpenAI).
+3. **TTS API Key** = ключ (для локального сервера может быть пустым).
+4. **TTS Model** = имя голоса / модели.
+
+**C. Оффлайн — Kokoro** (рекомендуется; всё в комплекте, интернет при игре не нужен)
+1. **TTS Mode** = `Offline TTS (Local)`, **Offline Provider** = `Kokoro`.
+2. **Kokoro Model (.onnx)** и **Kokoro Voices (.bin)** уже указывают на файлы в `BepInEx\kokoro\`
+   — не меняйте их.
+3. **Offline Voice Model** = голос Kokoro, например `af_jessica`, `af_bella`, `af_sarah`, `af_sky`.
+4. Нажмите **💾 Save Configuration**.
+5. **Запустите `BepInEx\setup_kokoro_env.bat` ОДИН РАЗ — только если папки `BepInEx\python` нет.**
+   Он скачает портативный Python и пакеты Kokoro в `BepInEx\python` (нужен интернет, несколько
+   минут). Если `BepInEx\python` уже есть — пропустите этот шаг.
+
+**D. Оффлайн — Piper**
+1. **TTS Mode** = `Offline TTS (Local)`, **Offline Provider** = `Piper`.
+2. **Model File (.onnx)** = `BepInEx\piperweight\en_US-libritts-high.onnx`.
+3. **Config File (.json)** = соответствующий `.json` рядом.
+
+Игра сама запускает и останавливает локальный сервер Kokoro (порт `8880`).
+
+### Шаг 5 — Персонаж, промпты и теги
+
+1. Выберите персонажа в **Current Character** (Eddie, Elysia, Estelle, Eiona). Промпты и теги
+   хранятся **отдельно для каждого** — при переключении настройки сохраняются.
+2. Отредактируйте **System Prompt** (основные уровни), **Hub World System Prompt** (Atrium) и
+   **Post-History Prompt** (напоминание о формате ответа).
+   > Оставьте инструкции по формату JSON, которые уже есть в промпте — игре нужен валидный JSON.
+3. В **NPC Customization (Tags)** отметьте нужные **Personalities** и **Hobbies**.
+
+### Шаг 6 — Сохранить и играть
+
+1. Нажмите **💾 Save Configuration** — внизу появится зелёное подтверждение.
+2. Закройте Configurator и запустите `AI2U - With you til the end.exe`.
+3. При желании переключите язык интерфейса: список **Language** (справа вверху) — `English` /
+   `Русский`. Меняется только интерфейс, не ключи и значения конфига.
+
+### Справка по файлу конфига
+
+GUI пишет `BepInEx\config\AI2U_Config.json`. Можно править вручную:
+
+```json
 {
-  "npc_action": "standing",
-  "npc_body_animation": "idle",
-  "npc_target_location": "player_location",
-  "npc_face_expression": "smile",
-  "angry_level": "normal",
-  "favorability_change": "neutral",
-  "giving_to_player": "none",
-  "npc_reply_to_player": "Your dialogue goes here"
+  "base_url": "https://openrouter.ai/api/v1/chat/completions",
+  "api_key": "sk-or-v1-...",
+  "model": "deepseek/deepseek-v4-flash",
+  "temperature": 1.1,
+  "top_p": 0.95,
+  "top_k": 0,
+  "max_tokens": 2050,
+  "frequency_penalty": 0.05,
+  "presence_penalty": 0.05,
+  "tts_enable": true,
+  "tts_mode": "Offline",
+  "offline_tts_provider": "Kokoro",
+  "offline_kokoro_model_path": "...\\BepInEx\\kokoro\\kokoro-v1.0.onnx",
+  "offline_kokoro_voices_path": "...\\BepInEx\\kokoro\\voices-v1.0.bin",
+  "eiona_offline_tts_model": "af_jessica",
+  "ui_language": "ru"
 }
-
-Allowed values:
-- npc_action: other, standing, sitting, sitting_down, walking, hugging, cooking, playing_games, following_player
-- npc_body_animation: idle, chill_idle, shy, stretch, crying, talk, dance, troublesome, cheers, nod
-- npc_face_expression: raise_eyebrows, sad, smile, angry_face, slight_smile, grin, tired_face, scream, angry, surprise, confused, bored, shy, smug, worried
-- npc_target_location: level1_entrance_door, level2_entrance_door, level3_entrance_door, level4_entrance_door, level5_entrance_door, level6_entrance_door, player_location
-- angry_level: happy, normal, chill, annoyed, furious, extremely furious
-- favorability_change: very negative, negative, neutral, positive, very positive
-- giving_to_player: Name of item from npc_inventory to give, or "none"
 ```
 
-#### 3.3 Personalities & Hobbies
+| Ключ | Значение |
+|------|----------|
+| `tts_mode` | `"Offline"` = Piper / Kokoro, `"Online"` = Azure / OpenAI Compatible. |
+| `offline_tts_provider` | `"Piper"` или `"Kokoro"` (при `tts_mode` = `Offline`). |
+| `tts_provider` | `"Azure"` или `"OpenAI Compatible"` (при `tts_mode` = `Online`). |
+| `<char>_offline_tts_model` | Голос Kokoro для персонажа (`eddie_`, `elysia_`, `estelle_`, `eiona_`). |
+| `ui_language` | `"en"` или `"ru"` (язык интерфейса Configurator). |
 
-Check the boxes for personality traits and hobbies to assign. These tags are dynamically injected into the AI's context for both main levels and the Hub World.
+## Проверенные модели LLM
 
-### Step 4: Save & Play
+Проверено через OpenRouter (`base_url` = `https://openrouter.ai/api/v1/chat/completions`):
 
-- Click **"Save Configuration"** (green confirmation text appears).
-- Close the Configurator.
-- Launch the game via `AI2U - With you til the end.exe`.
+| Модель | Результат |
+|--------|-----------|
+| `dots-studio/dots-3-note-preview:free` | ✅ работает |
+| `nvidia/nemotron-3-ultra-550b-a55b` | ✅ работает |
+| `qwen/qwen3.8-flash` | ✅ работает |
+| `z-ai/glm-5.3-flash` | ✅ работает |
+| `deepseek/deepseek-v4-flash` | ✅ работает |
+| `deepseek/deepseek-v4.1-flash` | ❌ ошибка |
+| `deepseek/deepseek-v4-flash-0731` | ❌ ошибка |
 
-> 💡 If dialogue breaks or the character stops responding: check your internet connection, verify API credits, or enable the BepInEx console for error logs.
+> Модель обязана вернуть **валидный JSON** (игра парсит ответ). Модели, оборачивающие ответ в
+> markdown или лишний текст, могут не работать — мод убирает блоки ```` ```json ````, но не
+> произвольный текст.
+
+## Логи и решение проблем
+
+- Лог мода: `BepInEx\UltimateFix_Debug.txt` (показывает точный запрос к API).
+- Лог BepInEx: `BepInEx\LogOutput.log`.
+- NPC молчит → проверьте режим/провайдера TTS и (для Kokoro) наличие папки `BepInEx\python`.
+- NPC не отвечает → проверьте API-ключ, баланс и интернет.
+- Игра не запускается → запустите от администратора или отключите Windows Defender.
 
 ---
 
-## Known Issues
+## Features / Возможности
 
-- ~~Could not chat in Hall via phone booth~~ **Fixed**
-- Large CPU usage — may be the game itself. FPS remains high (~200 on i5-11th / RTX 3050 4GB / 16GB RAM).
-- ~~Items bought in Hall not usable in gameplay~~ **Fixed**
+| Feature | / | Возможность |
+|---------|---|-------------|
+| Offline play & auth bypass | / | Оффлайн-игра и обход авторизации |
+| Custom LLM integration | / | Подключение своего LLM |
+| Infinite currency & local shop save | / | Бесконечная валюта и локальные сохранения магазина |
+| Unlocked NPCs (no Favor Meter) | / | Все NPC открыты (без Favor Meter) |
+| Hidden chapters 2–4 unlocked | / | Скрытые главы 2–4 открыты |
+| Local TTS: Piper / Kokoro | / | Локальный TTS: Piper / Kokoro |
 
 ---
 
-**Thank you.**
+**Credits**
 
-**huynhhoang04**
+Scripted by **huynhhoang04** (momadhuynh04). Bug reports: thanks to **Kora**.
+
+Repo: https://github.com/momadhuynh04/AI2Uffline-ModFix_For_AI2U
