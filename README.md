@@ -202,9 +202,10 @@ Tested through OpenRouter (`base_url` = `https://openrouter.ai/api/v1/chat/compl
 | `nvidia/nemotron-3-ultra-550b-a55b` | ✅ works |
 | `qwen/qwen3.8-flash` | ✅ works |
 | `z-ai/glm-5.3-flash` | ✅ works |
-| `deepseek/deepseek-v4-flash(4023)` | ✅ works |
+| `deepseek/deepseek-v4-flash(0423)` | ✅ works |
 | `deepseek/deepseek-v4.1-flash` | ❌ error |
 | `deepseek/deepseek-v4-flash-0731` | ❌ error |
+| `openai/gpt-6-luna` | ✅ works |
 
 > The model must return **valid JSON** (the game parses the reply). Models that wrap the answer in
 > markdown or extra text may fail — the mod strips ```` ```json ```` fences, but not arbitrary prose.
@@ -417,9 +418,10 @@ GUI пишет `BepInEx\config\AI2U_Config.json`. Можно править вр
 | `nvidia/nemotron-3-ultra-550b-a55b` | ✅ работает |
 | `qwen/qwen3.8-flash` | ✅ работает |
 | `z-ai/glm-5.3-flash` | ✅ работает |
-| `deepseek/deepseek-v4-flash` | ✅ работает |
+| `deepseek/deepseek-v4-flash(0423)` | ✅ работает |
 | `deepseek/deepseek-v4.1-flash` | ❌ ошибка |
 | `deepseek/deepseek-v4-flash-0731` | ❌ ошибка |
+| `openai/gpt-6-luna` | ✅ работает |
 
 > Модель обязана вернуть **валидный JSON** (игра парсит ответ). Модели, оборачивающие ответ в
 > markdown или лишний текст, могут не работать — мод убирает блоки ```` ```json ````, но не
